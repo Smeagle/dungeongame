@@ -46,7 +46,7 @@ public class GridTest {
 		right = new Coordinates(center, Direction.RIGHT);
 		bottomLeft = new Coordinates(center, Direction.BOTTOMLEFT);
 		bottomRight = new Coordinates(center, Direction.BOTTOMRIGHT);
-		viewPoint = new Coordinates(center, Direction.BOTTOMRIGHT);
+		viewPoint = bottomRight;
 		outOfBounds = new Coordinates(0, 2); // NOT added to grid
 
 		board.addField(topLeft, Terrain.FLOOR);
