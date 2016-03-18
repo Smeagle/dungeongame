@@ -5,7 +5,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	GridTest.class
+	GridTest.class,
+	CoordinatesTest.class
 })
 
 public class AllTests {
