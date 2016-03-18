@@ -15,9 +15,11 @@ public class Coordinates {
 	public Coordinates(Coordinates c, Direction dir) {
 		super();
 		this.r = c.r + dir.dr;
-		System.out.println("c.r is " + c.r + ", dir.dr is " + dir.dr + ", r is " + this.r);
 		this.q = c.q + dir.dq;
-		System.out.println("c.q is " + c.q + ", dir.dq is " + dir.dq + ", q is " + this.q);
+	}
+
+	public String toString() {
+		return "(" + r + "," + q + ")";
 	}
 
 	/**

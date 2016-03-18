@@ -1,6 +1,7 @@
 package dg;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.TreeMap;
@@ -33,12 +34,14 @@ public class Gameboard {
 		HashMap<Coordinates, Coordinates> previousField = new HashMap<Coordinates, Coordinates>();
 		HashMap<Coordinates, Integer> realCostToField = new HashMap<Coordinates, Integer>();
 		TreeMap<Integer, Coordinates> pathCandidates = new TreeMap<Integer, Coordinates>();
-
+		
 		// Don't search if target is origin.
-		if (origin == target) {
+		if (origin.equals(target)) {
 			success = true;
 		}
 
+		realCostToField.put(origin, 0);
+		
 		// Initialize path candidates from origin
 		for (Coordinates cand : getMoveOptions(origin)) {
 			previousField.put(cand, origin);
@@ -49,22 +52,23 @@ public class Gameboard {
 		// A* search. Guarantees shortest path.
 		while (success == false && pathCandidates.isEmpty() == false) {
 			Coordinates current = pathCandidates.pollFirstEntry().getValue();
-
-			for (Coordinates cand : getMoveOptions(current)) {
-				Integer newRealCost = realCostToField.get(current) + Coordinates.calculateDistance(current, cand);
-				if (previousField.containsKey(cand) == false || realCostToField.get(cand) > newRealCost) {
-					previousField.put(cand, current);
-					realCostToField.put(cand, newRealCost);
-					pathCandidates.put(Coordinates.calculateDistance(cand, target) + realCostToField.get(cand), cand);
-					if (cand == target) {
-						success = true;
+			if (current.equals(target)) {
+				success = true;
+			} else {
+				for (Coordinates cand : getMoveOptions(current)) {
+					Integer newRealCost = realCostToField.get(current) + Coordinates.calculateDistance(current, cand);
+					if (realCostToField.containsKey(cand) == false || realCostToField.get(cand) > newRealCost) {
+						previousField.put(cand, current);
+						realCostToField.put(cand, newRealCost);
+						pathCandidates.put(Coordinates.calculateDistance(cand, target) + realCostToField.get(cand),
+								cand);
 					}
 				}
 			}
 		}
 
 		// Step through previous fields in reverse to get best path.
-		if (success == true && target != origin) {
+		if (success == true && false == target.equals(origin)) {
 			boolean pathComplete = false;
 			Coordinates step = target;
 			while (pathComplete == false) {
@@ -104,7 +108,6 @@ public class Gameboard {
 	 * @return false when c out of bounds.
 	 */
 	public boolean isInBounds(Coordinates c) {
-		System.out.println("Coordinates(" + c.r + "," + c.q + ") are in bounds: " + grid.containsKey(c));
 		return grid.containsKey(c);
 	}
 
@@ -126,6 +129,7 @@ public class Gameboard {
 				neighbors.add(neighbor);
 			}
 		}
+
 		return neighbors;
 	}
 

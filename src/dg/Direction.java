@@ -1,7 +1,12 @@
 package dg;
 
 public enum Direction {
-	TOPLEFT(-1, 0), TOPRIGHT(-1, 1), RIGHT(0, 1), BOTTOMRIGHT(1, 0), BOTTOMLEFT(1, -1), LEFT(0, -1);
+	TOPLEFT(-1, 0), 
+	TOPRIGHT(-1, 1), 
+	RIGHT(0, 1), 
+	BOTTOMRIGHT(1, 0), 
+	BOTTOMLEFT(1, -1), 
+	LEFT(0, -1);
 
 	public final Integer dr;
 	public final Integer dq;
