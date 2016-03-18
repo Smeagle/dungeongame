@@ -1,95 +1,105 @@
 package dg;
+
 import java.util.LinkedList;
 
 public class Guard {
 
-	/* Agent characteristics */
-	private final Coordinates SPAWN;
-	private final Integer FIELD_OF_VIEW;
-	private final Integer FIELD_OF_VIEW_ALERTED;
-	private final Integer SPEED;
-	private final Integer SPEED_ALERTED;
-	private final LinkedList<Coordinates> PATROLROUTE;
+	private final Integer alertedFieldOfView;
+	private final Integer alertedSpeed;
+	private final Integer fieldOfView;
+	private final Integer speed;
+	private final LinkedList<Coordinates> patrolRoute;
+	private final Coordinates spawnPoint;
 	
-	/* Current stats */
+	private boolean alerted;
 	private Coordinates currentPosition;
 	private Coordinates currentTarget;
 	private Direction directionOfView;
-	
-	private Integer movesLeft;
-	private boolean alerted;
 	private Integer enemiesInSight;
+	private Integer movesLeft;
 	private Coordinates nearestEnemy;
-	
-	public Guard(Coordinates spawn, Integer fov, Integer fovA, Integer speed, Integer speedAlerted, LinkedList<Coordinates> route) {
-		this.SPAWN = spawn;
-		this.FIELD_OF_VIEW = fov;
-		this.FIELD_OF_VIEW_ALERTED = fovA;
-		this.SPEED = speed;
-		this.SPEED_ALERTED = speedAlerted;
-		this.PATROLROUTE = route;
+
+	public Guard(Coordinates spawn, Integer fov, Integer fovA, Integer speed,
+			Integer speedAlerted, LinkedList<Coordinates> route) {
+		this.spawnPoint = spawn;
+		this.fieldOfView = fov;
+		this.alertedFieldOfView = fovA;
+		this.speed = speed;
+		this.alertedSpeed = speedAlerted;
+		this.patrolRoute = route;
 		this.currentPosition = spawn;
-		this.directionOfView = Direction.TOPLEFT; //TODO should be in direction of next waypoint.
+		this.directionOfView = Direction.TOPLEFT; // TODO should be in direction
+													// of next waypoint.
 		this.movesLeft = 0;
-		this.alerted = false;		
+		this.alerted = false;
 	}
-	
-	public Coordinates move(Direction dir) {
-		Coordinates targetField = new Coordinates(currentPosition.getQ() + dir.get_dq(), currentPosition.getR() + dir.get_dr());
-		currentPosition = targetField; //TODO needs to check that move is allowed.
-		movesLeft = movesLeft - 1;
-		checkLineOfSight();
-		return currentPosition;
+
+	public Direction calculatePath(Coordinates currentPosition,
+			Coordinates targetPosition) {
+		// TODO calculate actual path
+		return Direction.TOPLEFT;
 	}
-	
-	public void respawn() {
-		//TODO Logic for respawning after being killed.
-	}
-	
+
 	public boolean checkLineOfSight() {
 		boolean enemySpotted = false;
-		//TODO check all fields in field of view for enemies
-		if(enemySpotted == true) {
+		// TODO check all fields in field of view for enemies
+		if (enemySpotted == true) {
 			alerted = true;
-			movesLeft = SPEED_ALERTED - SPEED + movesLeft;
+			movesLeft = alertedSpeed - speed + movesLeft;
 			checkLOS_ALERTED();
 		}
 		return enemySpotted;
 	}
-	
+
 	public void checkLOS_ALERTED() {
-		//TODO check all fields in alerted fov for enemies
+		// TODO check all fields in alerted fov for enemies
 	}
-	
-	public Direction calculatePath(Coordinates currentPosition, Coordinates targetPosition) {
-		//TODO calculate actual path
-		return Direction.TOPLEFT;
+
+	public Coordinates move(Direction dir) {
+		Coordinates targetField = new Coordinates(currentPosition.q
+				+ dir.get_dq(), currentPosition.r + dir.get_dr());
+		currentPosition = targetField; // TODO needs to check that move is
+										// allowed.
+		movesLeft = movesLeft - 1;
+		checkLineOfSight();
+		return currentPosition;
 	}
-	
+
+	public void respawn() {
+		currentPosition = spawnPoint;
+		movesLeft = 0;
+		alerted = false;
+		directionOfView = Direction.TOPLEFT; // TODO should be in direction of
+												// next waypoint
+		// TODO Logic for respawning after being killed.
+	}
+
 	public void startRound() {
-		
+
 		/* Check if still alerted */
-		if(alerted == true) {
+		if (alerted == true) {
 			checkLOS_ALERTED();
 		} else {
 			checkLineOfSight();
 		}
-		
-		if(enemiesInSight == 0) {
+
+		if (enemiesInSight == 0) {
 			alerted = false;
-			movesLeft = SPEED;
-			currentTarget = PATROLROUTE.get(0); //TODO must be the next one obviously, not always the first
+			movesLeft = speed;
+			currentTarget = patrolRoute.get(0); // TODO must be the next one
+												// obviously, not always the
+												// first
 		} else {
 			alerted = true;
-			movesLeft = SPEED_ALERTED;
+			movesLeft = alertedSpeed;
 			currentTarget = nearestEnemy;
 		}
-		
+
 		/* Move along patrol or towards enemy */
-		
-		while(movesLeft > 0) {
+
+		while (movesLeft > 0) {
 			move(calculatePath(currentPosition, currentTarget));
 		}
-		
+
 	}
 }
