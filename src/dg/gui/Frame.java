@@ -37,6 +37,7 @@ public class Frame extends JFrame {
 	
 	private Frame() {
 		this.add(new BoardPanel());
+		this.setDefaultCloseOperation(Frame.EXIT_ON_CLOSE);
 		
 		// exit on escape key
 		this.addKeyListener(new KeyAdapter() {
