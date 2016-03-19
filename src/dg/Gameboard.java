@@ -3,8 +3,11 @@ package dg;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /* This is a grid using axial coordinates with pointy topped hexagons. */
 /**
@@ -54,7 +57,7 @@ public class Gameboard {
 		LinkedList<Coordinates> bestPath = new LinkedList<Coordinates>();
 		HashMap<Coordinates, Coordinates> previousField = new HashMap<Coordinates, Coordinates>();
 		HashMap<Coordinates, Integer> realCostToField = new HashMap<Coordinates, Integer>();
-		TreeMap<Integer, Coordinates> pathCandidates = new TreeMap<Integer, Coordinates>();
+		TreeMap<Integer, Coordinates> pathCandidates = new TreeMap<Integer, Coordinates>(); //TODO: Need to use something else as priority Queue, key is unique in TreeMap.
 
 		// Don't search if target is origin.
 		if (origin.equals(target)) {
@@ -197,7 +200,8 @@ public class Gameboard {
 			// Touching Lines only block view when both are wall.
 			boolean wall = true;
 			for (Coordinates c : nextStep) {
-				if (getTerrain(c) != Terrain.WALL) {
+				//Treat outOfBound fields like walls for visibility
+				if (isInBounds(c) == true && getTerrain(c) != Terrain.WALL) {
 					wall = false;
 				}
 			}
@@ -207,5 +211,31 @@ public class Gameboard {
 		}
 
 		return visible;
+	}
+	
+	public HashSet<Coordinates> getFieldOfView(Coordinates viewPoint) throws IndexOutOfBoundsException {
+		if (false == isInBounds(viewPoint)) {
+			throw new IndexOutOfBoundsException();
+		}
+		HashSet<Coordinates> visibleFields = new HashSet<Coordinates>();
+		HashSet<Coordinates> evaluatedFields = new HashSet<Coordinates>();
+
+		LinkedList<Coordinates> frontier = new LinkedList<Coordinates>();
+		frontier.add(viewPoint);
+		
+		while(frontier.isEmpty() == false) {
+			Coordinates currentField = frontier.pollFirst();
+			if(evaluatedFields.contains(currentField) == false && isVisible(viewPoint, currentField)) {
+				visibleFields.add(currentField);
+				for(Coordinates neighbor: getNeighbors(currentField)) {
+					if(false == evaluatedFields.contains(neighbor)) {
+						frontier.add(neighbor);
+					}
+				}
+			}
+			evaluatedFields.add(currentField);
+		}
+		
+		return visibleFields;
 	}
 }
