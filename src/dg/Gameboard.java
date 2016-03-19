@@ -251,4 +251,8 @@ public class Gameboard {
 
 		return visibleFields;
 	}
+	
+	public Hashtable<Coordinates, Terrain> getGrid() {
+		return grid;
+	}
 }
