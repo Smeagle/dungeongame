@@ -208,4 +208,9 @@ public class Gameboard {
 
 		return visible;
 	}
+	
+	public Hashtable<Coordinates, Terrain> getGrid() {
+		return grid;
+	}
+	
 }
