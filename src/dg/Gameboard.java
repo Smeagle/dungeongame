@@ -1,6 +1,7 @@
 package dg;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.TreeMap;
@@ -181,14 +182,30 @@ public class Gameboard {
 	 * @return true when target is visible from viewPoint.
 	 */
 	public boolean isVisible(Coordinates viewPoint, Coordinates target) throws IndexOutOfBoundsException {
-		if (false == grid.containsKey(viewPoint) && grid.containsKey(target)) {
+		if (false == isInBounds(viewPoint) || false == isInBounds(target)) {
 			throw new IndexOutOfBoundsException();
 		}
-		boolean visible = false;
-		if (Coordinates.calculateDistance(viewPoint, target) <= 1.0) {
-			visible = true;
+
+		boolean visible = true;
+		Integer distance = Coordinates.calculateDistance(viewPoint, target);
+		HashMap<Integer, HashSet<Coordinates>> rayFields = LOSUtilities.getFieldsOnRay(viewPoint, target);
+
+		for (int i = 0; (visible == true) && (i < distance); i++) {
+			// No need to check last field, it's visible if not blocked by earlier step.
+			HashSet<Coordinates> nextStep = rayFields.get(i);
+			
+			// Touching Lines only block view when both are wall.
+			boolean wall = true;
+			for (Coordinates c : nextStep) {
+				if (getTerrain(c) != Terrain.WALL) {
+					wall = false;
+				}
+			}
+			if (wall == true) {
+				visible = false;
+			}
 		}
-		// TODO implement general function for bigger distances
+
 		return visible;
 	}
 }

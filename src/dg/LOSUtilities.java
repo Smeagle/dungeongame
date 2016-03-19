@@ -4,6 +4,7 @@
 package dg;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -65,9 +66,9 @@ public class LOSUtilities {
 		}
 	}
 
-	public static HashMap<Integer, Coordinates> fieldsOnRay(Coordinates rayOrigin, Coordinates rayTarget) {
+	public static HashMap<Integer, HashSet<Coordinates>> getFieldsOnRay(Coordinates rayOrigin, Coordinates rayTarget) {
 		// Let's try a naïve approach first. When I have time, I'll put a hexagonal version Bresenham algorithm here.
-		HashMap<Integer, Coordinates> fieldsOnLine = new HashMap<Integer, Coordinates>();
+		HashMap<Integer, HashSet<Coordinates>> fieldsOnLine = new HashMap<Integer, HashSet<Coordinates>>(); //TODO need different data structure as more than one field on the line can have the same distance
 
 		Integer dist = Coordinates.calculateDistance(rayOrigin, rayTarget);
 		Integer dr = rayTarget.r - rayOrigin.r;
@@ -77,20 +78,31 @@ public class LOSUtilities {
 			// Yay, that's a straight line!
 
 			for (int i = 0; i < dist + 1; i++) {
-				fieldsOnLine.put(i, new Coordinates(rayOrigin.r + i * dr / dist, rayOrigin.q + i * dq / dist));
+				HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
+				fieldsAtSameDist.add(new Coordinates(rayOrigin.r + i * dr / dist, rayOrigin.q + i * dq / dist));
+				fieldsOnLine.put(i, fieldsAtSameDist);
 			}
 		} else if (dr == dq || -2 * dr == dq || -2 * dq == dr) {
 			// Touching Line!
-			fieldsOnLine.put(0, rayOrigin);
+			HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
+			fieldsAtSameDist.add(rayOrigin);
+			fieldsOnLine.put(0, fieldsAtSameDist);
+			
 			Coordinates lastIntersected = rayOrigin;
 			for (int i = 1; i < dist + 1; i++) {
 				if (i % 2 == 0) {
 					Coordinates currentIntersected = new Coordinates(rayOrigin.r + (i * dr) / dist, rayOrigin.q
 							+ (i * dq) / dist);
+					fieldsAtSameDist = new HashSet<Coordinates>();
 					for (Coordinates touching : Coordinates.getCommonAdjacent(lastIntersected, currentIntersected)) {
-						fieldsOnLine.put(i - 1, touching);
+						fieldsAtSameDist.add(touching);
 					}
-					fieldsOnLine.put(i, currentIntersected);
+					fieldsOnLine.put(i-1, fieldsAtSameDist);
+
+					fieldsAtSameDist = new HashSet<Coordinates>();
+					fieldsAtSameDist.add(currentIntersected);
+					fieldsOnLine.put(i, fieldsAtSameDist);
+					
 					lastIntersected = currentIntersected;
 				}
 			}
@@ -100,7 +112,9 @@ public class LOSUtilities {
 				for (int range_q = Math.min(rayOrigin.q, rayTarget.q); range_q < Math.max(rayOrigin.q, rayTarget.q) + 1; range_q++) {
 					Coordinates cand = new Coordinates(range_r, range_q);
 					if (Intersection.CLEAR != intersects(rayOrigin, rayTarget, cand)) {
-						fieldsOnLine.put(Coordinates.calculateDistance(rayOrigin, cand), cand);
+						HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
+						fieldsAtSameDist.add(cand);
+						fieldsOnLine.put(Coordinates.calculateDistance(rayOrigin, cand), fieldsAtSameDist);
 					}
 				}
 			}
