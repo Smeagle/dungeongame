@@ -1,5 +1,9 @@
 package dg;
 
+/**
+ * @author murch
+ * Direction encapsulates differences between two coordinates. Mostly used for neighbors.
+ */
 public enum Direction {
 	TOPLEFT(-1, 0), 
 	TOPRIGHT(-1, 1), 

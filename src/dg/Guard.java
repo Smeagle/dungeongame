@@ -2,6 +2,10 @@ package dg;
 
 import java.util.LinkedList;
 
+/**
+ * @author murch
+ * Class for adversaries in the game.
+ */
 public class Guard {
 
 	private final Integer alertedFieldOfView;

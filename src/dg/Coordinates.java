@@ -1,6 +1,9 @@
 package dg;
 
-/* Immutable Coordinate class. */
+/**
+ * @author murch
+ * Immutable Coordinate class.
+ */
 public class Coordinates {
 	public final Integer r;
 	public final Integer q;
