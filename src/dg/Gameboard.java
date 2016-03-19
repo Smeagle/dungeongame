@@ -6,14 +6,26 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 /* This is a grid using axial coordinates with pointy topped hexagons. */
+/**
+ * @author murch
+ * 
+ */
 public class Gameboard {
 
 	private Hashtable<Coordinates, Terrain> grid;
 
+	/**
+	 * Creates an empty gameboard.
+	 */
 	public Gameboard() {
 		this.grid = new Hashtable<Coordinates, Terrain>();
 	}
 
+	/**
+	 * @param c
+	 * @param t
+	 * @throws IllegalArgumentException
+	 */
 	public void addField(Coordinates c, Terrain t) throws IllegalArgumentException {
 		if (false == grid.containsKey(c)) {
 			grid.put(c, t);
@@ -22,6 +34,15 @@ public class Gameboard {
 		}
 	}
 
+	/**
+	 * @param origin
+	 *            The field the path starts from.
+	 * @param target
+	 *            The field that wants to be reached.
+	 * @return List of Coordinates that need to be traveled to reach the target. Starts with neighbor of origin.
+	 * @throws IllegalArgumentException
+	 *             When either origin or target are out of bounds.
+	 */
 	public LinkedList<Coordinates> calculatePath(Coordinates origin, Coordinates target)
 			throws IllegalArgumentException {
 		if (isInBounds(origin) == false || isInBounds(target) == false) {
@@ -33,14 +54,14 @@ public class Gameboard {
 		HashMap<Coordinates, Coordinates> previousField = new HashMap<Coordinates, Coordinates>();
 		HashMap<Coordinates, Integer> realCostToField = new HashMap<Coordinates, Integer>();
 		TreeMap<Integer, Coordinates> pathCandidates = new TreeMap<Integer, Coordinates>();
-		
+
 		// Don't search if target is origin.
 		if (origin.equals(target)) {
 			success = true;
 		}
 
 		realCostToField.put(origin, 0);
-		
+
 		// Initialize path candidates from origin
 		for (Coordinates cand : getMoveOptions(origin)) {
 			previousField.put(cand, origin);
@@ -122,10 +143,9 @@ public class Gameboard {
 			throw new IndexOutOfBoundsException();
 		}
 		LinkedList<Coordinates> neighbors = new LinkedList<Coordinates>();
-		for (Direction dir : Direction.values()) {
-			Coordinates neighbor = new Coordinates(c, dir);
-			if (isInBounds(neighbor)) {
-				neighbors.add(neighbor);
+		for (Coordinates cand : Coordinates.getAdjacent(c)) {
+			if (isInBounds(cand)) {
+				neighbors.add(cand);
 			}
 		}
 
