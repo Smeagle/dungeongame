@@ -1,8 +1,9 @@
 package dg;
 
+import java.util.LinkedList;
+
 /**
- * @author murch
- * Immutable Coordinate class.
+ * @author murch Immutable Coordinate class.
  */
 public class Coordinates {
 	public final Integer r;
@@ -54,5 +55,27 @@ public class Coordinates {
 	public int hashCode() {
 		String hashInput = "(" + this.r + "," + this.q + ")";
 		return hashInput.hashCode();
+	}
+
+	public static LinkedList<Coordinates> getAdjacent(Coordinates c) {
+		LinkedList<Coordinates> adjacentFields = new LinkedList<Coordinates>();
+		for (Direction dir : Direction.values()) {
+			Coordinates adjacent = new Coordinates(c, dir);
+			adjacentFields.add(adjacent);
+		}
+		return adjacentFields;
+	}
+
+	public static LinkedList<Coordinates> getCommonAdjacent(Coordinates a, Coordinates b) {
+		LinkedList<Coordinates> commonAdjacentFields = new LinkedList<Coordinates>();
+		LinkedList<Coordinates> adjacentFieldsA = getAdjacent(a);
+		LinkedList<Coordinates> adjacentFieldsB = getAdjacent(b);
+		
+		for (Coordinates adjacentA : adjacentFieldsA) {
+			if(adjacentFieldsB.contains(adjacentA)) {
+				commonAdjacentFields.add(adjacentA);
+			}
+		}
+		return commonAdjacentFields;
 	}
 }
