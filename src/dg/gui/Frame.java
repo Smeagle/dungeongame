@@ -23,7 +23,7 @@ public class Frame extends JFrame {
 	 * Beim Start des Spiel aufzurufen, um die GUI zu laden
 	 */
 	public static void init() throws Exception {
-		SwingUtilities.invokeAndWait(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
