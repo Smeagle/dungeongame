@@ -20,12 +20,12 @@ public class DevUtilities {
 		Gameboard board = new Gameboard();
 
 		Coordinates center = new Coordinates(0, 0);
-		Coordinates topLeft = new Coordinates(0, -1);
-		Coordinates topRight = new Coordinates(1, -1);
-		Coordinates left = new Coordinates(-1, 0);
-		Coordinates right = new Coordinates(1, 0);
-		Coordinates bottomLeft = new Coordinates(-1, 1);
-		Coordinates bottomRight = new Coordinates(0, 1);
+		Coordinates topLeft = new Coordinates(center, Direction.TOPLEFT);
+		Coordinates topRight = new Coordinates(center, Direction.TOPRIGHT);
+		Coordinates left = new Coordinates(center, Direction.LEFT);
+		Coordinates right = new Coordinates(center, Direction.RIGHT);
+		Coordinates bottomLeft = new Coordinates(center, Direction.BOTTOMLEFT);
+		Coordinates bottomRight = new Coordinates(center, Direction.BOTTOMRIGHT);
 
 		board.addField(topLeft, Terrain.FLOOR);
 		board.addField(topRight, Terrain.FLOOR);
