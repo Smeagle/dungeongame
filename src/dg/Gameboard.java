@@ -3,11 +3,8 @@ package dg;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /* This is a grid using axial coordinates with pointy topped hexagons. */
 /**
@@ -57,7 +54,7 @@ public class Gameboard {
 		LinkedList<Coordinates> bestPath = new LinkedList<Coordinates>();
 		HashMap<Coordinates, Coordinates> previousField = new HashMap<Coordinates, Coordinates>();
 		HashMap<Coordinates, Integer> realCostToField = new HashMap<Coordinates, Integer>();
-		TreeMap<Integer, Coordinates> pathCandidates = new TreeMap<Integer, Coordinates>(); //TODO: Need to use something else as priority Queue, key is unique in TreeMap.
+		TreeMap<Integer, LinkedList<Coordinates>> pathCandidates = new TreeMap<Integer, LinkedList<Coordinates>>();
 
 		// Don't search if target is origin.
 		if (origin.equals(target)) {
@@ -70,22 +67,38 @@ public class Gameboard {
 		for (Coordinates cand : getMoveOptions(origin)) {
 			previousField.put(cand, origin);
 			realCostToField.put(cand, Coordinates.calculateDistance(origin, cand));
-			pathCandidates.put(Coordinates.calculateDistance(cand, target) + realCostToField.get(cand), cand);
+			
+			Integer estimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
+			LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
+			candidateList.push(cand);
+			pathCandidates.put(estimatedCost, candidateList);
 		}
 
 		// A* search. Guarantees shortest path.
 		while (success == false && pathCandidates.isEmpty() == false) {
-			Coordinates current = pathCandidates.pollFirstEntry().getValue();
-			if (current.equals(target)) {
-				success = true;
+			LinkedList<Coordinates> mostPromising = pathCandidates.get(pathCandidates.firstKey());
+			if (mostPromising.isEmpty()) {
+				pathCandidates.remove(pathCandidates.firstKey());
 			} else {
-				for (Coordinates cand : getMoveOptions(current)) {
-					Integer newRealCost = realCostToField.get(current) + Coordinates.calculateDistance(current, cand);
-					if (realCostToField.containsKey(cand) == false || realCostToField.get(cand) > newRealCost) {
-						previousField.put(cand, current);
-						realCostToField.put(cand, newRealCost);
-						pathCandidates.put(Coordinates.calculateDistance(cand, target) + realCostToField.get(cand),
-								cand);
+				Coordinates current = mostPromising.pollFirst();
+				if (current.equals(target)) {
+					success = true;
+				} else {
+					for (Coordinates cand : getMoveOptions(current)) {
+						Integer newRealCost = realCostToField.get(current)
+								+ Coordinates.calculateDistance(current, cand);
+						if (realCostToField.containsKey(cand) == false || realCostToField.get(cand) > newRealCost) {
+							previousField.put(cand, current);
+							realCostToField.put(cand, newRealCost);
+							Integer newEstimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
+							if(pathCandidates.containsKey(newEstimatedCost)) {
+								pathCandidates.get(newEstimatedCost).push(cand);
+							} else {
+								LinkedList<Coordinates>	candidateList = new LinkedList<Coordinates>();
+								candidateList.push(cand);
+								pathCandidates.put(newEstimatedCost, candidateList);
+							}
+						}
 					}
 				}
 			}
@@ -196,11 +209,11 @@ public class Gameboard {
 		for (int i = 0; (visible == true) && (i < distance); i++) {
 			// No need to check last field, it's visible if not blocked by earlier step.
 			HashSet<Coordinates> nextStep = rayFields.get(i);
-			
+
 			// Touching Lines only block view when both are wall.
 			boolean wall = true;
 			for (Coordinates c : nextStep) {
-				//Treat outOfBound fields like walls for visibility
+				// Treat outOfBound fields like walls for visibility
 				if (isInBounds(c) == true && getTerrain(c) != Terrain.WALL) {
 					wall = false;
 				}
@@ -212,7 +225,7 @@ public class Gameboard {
 
 		return visible;
 	}
-	
+
 	public HashSet<Coordinates> getFieldOfView(Coordinates viewPoint) throws IndexOutOfBoundsException {
 		if (false == isInBounds(viewPoint)) {
 			throw new IndexOutOfBoundsException();
@@ -222,20 +235,20 @@ public class Gameboard {
 
 		LinkedList<Coordinates> frontier = new LinkedList<Coordinates>();
 		frontier.add(viewPoint);
-		
-		while(frontier.isEmpty() == false) {
+
+		while (frontier.isEmpty() == false) {
 			Coordinates currentField = frontier.pollFirst();
-			if(evaluatedFields.contains(currentField) == false && isVisible(viewPoint, currentField)) {
+			if (evaluatedFields.contains(currentField) == false && isVisible(viewPoint, currentField)) {
 				visibleFields.add(currentField);
-				for(Coordinates neighbor: getNeighbors(currentField)) {
-					if(false == evaluatedFields.contains(neighbor)) {
+				for (Coordinates neighbor : getNeighbors(currentField)) {
+					if (false == evaluatedFields.contains(neighbor)) {
 						frontier.add(neighbor);
 					}
 				}
 			}
 			evaluatedFields.add(currentField);
 		}
-		
+
 		return visibleFields;
 	}
 }
