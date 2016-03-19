@@ -66,17 +66,29 @@ public class LOSUtilities {
 		}
 	}
 
+	/**
+	 * Generates all fields along the vision ray from origin to target. Does not check whether Coordinates correspond to
+	 * in-bounds fields on the board!
+	 * 
+	 * @param rayOrigin
+	 * @param rayTarget
+	 * @return
+	 */
 	public static HashMap<Integer, HashSet<Coordinates>> getFieldsOnRay(Coordinates rayOrigin, Coordinates rayTarget) {
 		// Let's try a naïve approach first. When I have time, I'll put a hexagonal version Bresenham algorithm here.
-		HashMap<Integer, HashSet<Coordinates>> fieldsOnLine = new HashMap<Integer, HashSet<Coordinates>>(); //TODO need different data structure as more than one field on the line can have the same distance
+		HashMap<Integer, HashSet<Coordinates>> fieldsOnLine = new HashMap<Integer, HashSet<Coordinates>>();
 
 		Integer dist = Coordinates.calculateDistance(rayOrigin, rayTarget);
 		Integer dr = rayTarget.r - rayOrigin.r;
 		Integer dq = rayTarget.q - rayOrigin.q;
-
-		if (rayOrigin.r == rayTarget.r || rayOrigin.q == rayTarget.q || dr == -dq) {
+		
+		if (rayOrigin == rayTarget) {
+			// Duh, looking at myself.
+			HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
+			fieldsAtSameDist.add(rayOrigin);
+			fieldsOnLine.put(0, fieldsAtSameDist);
+		} else if (rayOrigin.r == rayTarget.r || rayOrigin.q == rayTarget.q || dr == -dq) {
 			// Yay, that's a straight line!
-
 			for (int i = 0; i < dist + 1; i++) {
 				HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
 				fieldsAtSameDist.add(new Coordinates(rayOrigin.r + i * dr / dist, rayOrigin.q + i * dq / dist));
@@ -87,7 +99,7 @@ public class LOSUtilities {
 			HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
 			fieldsAtSameDist.add(rayOrigin);
 			fieldsOnLine.put(0, fieldsAtSameDist);
-			
+
 			Coordinates lastIntersected = rayOrigin;
 			for (int i = 1; i < dist + 1; i++) {
 				if (i % 2 == 0) {
@@ -97,12 +109,12 @@ public class LOSUtilities {
 					for (Coordinates touching : Coordinates.getCommonAdjacent(lastIntersected, currentIntersected)) {
 						fieldsAtSameDist.add(touching);
 					}
-					fieldsOnLine.put(i-1, fieldsAtSameDist);
+					fieldsOnLine.put(i - 1, fieldsAtSameDist);
 
 					fieldsAtSameDist = new HashSet<Coordinates>();
 					fieldsAtSameDist.add(currentIntersected);
 					fieldsOnLine.put(i, fieldsAtSameDist);
-					
+
 					lastIntersected = currentIntersected;
 				}
 			}

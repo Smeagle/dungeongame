@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.junit.After;
@@ -110,6 +111,30 @@ public class GridTest {
 
 		exception.expect(IndexOutOfBoundsException.class);
 		board.isVisible(viewPoint, outOfBounds);
+	}
+	
+
+	@Test
+	public void isVisibleAlongTouchingWallTest() {
+		board = new Gameboard();
+		board.addField(viewPoint, Terrain.FLOOR);
+		board.addField(center, Terrain.FLOOR);
+		board.addField(topRight, Terrain.FLOOR);
+		
+		assertEquals(true, board.isVisible(viewPoint, topRight));
+	}
+	
+	@Test
+	public void tinyFieldOfViewTest() {
+		HashSet<Coordinates> visibleFields = board.getFieldOfView(viewPoint);
+		assertEquals(5, visibleFields.size());
+		assertEquals(true, visibleFields.contains(viewPoint));
+		assertEquals(true, visibleFields.contains(bottomLeft));
+		assertEquals(true, visibleFields.contains(left));
+		assertEquals(true, visibleFields.contains(center));
+		assertEquals(true, visibleFields.contains(right));
+		assertEquals(false, visibleFields.contains(topLeft));
+		assertEquals(false, visibleFields.contains(topRight));		
 	}
 
 	@Test
