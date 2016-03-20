@@ -55,7 +55,7 @@ public class Guard {
 	}
 
 	public Coordinates move(Direction dir) {
-		Coordinates targetField = new Coordinates(currentPosition.r + dir.dr, currentPosition.q + dir.dq);
+		Coordinates targetField = new Coordinates(currentPosition.q + dir.dq, currentPosition.r + dir.dr);
 		currentPosition = targetField; // TODO needs to check that move is allowed.
 		movesLeft = movesLeft - 1;
 		checkLineOfSight();
@@ -94,6 +94,5 @@ public class Guard {
 			Coordinates nextField = path.get(0);
 				
 			move(Direction.getDirectionFromCoordinates(nextField, currentPosition));}
-
 	}
 }
