@@ -1,99 +1,144 @@
 package dg;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
-/**
- * @author murch
- * Class for adversaries in the game.
- */
-public class Guard {
-
-	private final Integer alertedFieldOfView;
-	private final Integer alertedSpeed;
-	private final Integer fieldOfView;
-	private final Integer speed;
-	private final LinkedList<Coordinates> patrolRoute;
-	private final Coordinates spawnPoint;
-
-	private boolean alerted;
-	private Coordinates currentPosition;
-	private Coordinates currentTarget;
+public class Guard extends Agent {
+	private LinkedList<Coordinates> patrolRoute;
+	private Integer nextPatrolPoint;
+	private boolean isAlerted;
 	private Direction directionOfView;
-	private Integer enemiesInSight;
-	private Integer movesLeft;
-	private Coordinates nearestEnemy;
 	private Gameboard board;
+	private Integer alertedBonus;
+	private Coordinates nearestEnemy;
 
-	public Guard(Coordinates spawn, Integer fov, Integer fovA, Integer speed, Integer speedAlerted,
-			LinkedList<Coordinates> route, Gameboard board) {
-		this.spawnPoint = spawn;
-		this.fieldOfView = fov;
-		this.alertedFieldOfView = fovA;
-		this.speed = speed;
-		this.alertedSpeed = speedAlerted;
-		this.patrolRoute = route;
-		this.currentPosition = spawn;
-		this.directionOfView = Direction.TOPLEFT; // TODO should be in direction of next waypoint.
-		this.movesLeft = 0;
-		this.alerted = false;
+	public Guard(Coordinates spawnPoint, LinkedList<Coordinates> patrolRoute, Gameboard board) {
 		this.board = board;
+		this.position = spawnPoint;
+		this.affiliation = Affiliation.DUNGEON;
+		this.spawn = spawnPoint;
+		this.patrolRoute = patrolRoute;
+		resetPatrolRoute();
+		this.directionOfView = Direction.getDirectionFromCoordinates(spawn,
+				board.calculatePath(spawnPoint, patrolRoute.get(nextPatrolPoint)).getFirst());
+		this.isAlerted = false;
+		this.movesPerTurn = 2;
+		this.alertedBonus = 3;
+		this.nearestEnemy = position;
 	}
 
-	public boolean checkLineOfSight() {
-		boolean enemySpotted = false;
-		// TODO check all fields in field of view for enemies
-		if (enemySpotted == true) {
-			alerted = true;
-			movesLeft = alertedSpeed - speed + movesLeft;
-			checkLOS_ALERTED();
+	public void alert() {
+		if (isAlerted == false) {
+			movesLeft = movesLeft + alertedBonus;
 		}
-		return enemySpotted;
+		isAlerted = true;
 	}
 
-	public void checkLOS_ALERTED() {
-		// TODO check all fields in alerted fov for enemies
+	/**
+	 * Checks the field of view. Alerts Guard if enemy is spotted and reruns with 360° vision. Returns Coordinates of
+	 * nearest enemy, or position if no enemy in sight.
+	 * 
+	 * @param board
+	 * @return Coordinates of nearest enemy, or own position if no enemies in sight.
+	 */
+	private Coordinates checkFieldOfView(Gameboard board) {
+		Coordinates enemyTarget = position;
+
+		for (Agent agent : board.getAgents()) {
+			if (agent.getAffiliation() == Affiliation.PLAYER) {
+				if (notices(agent)) {
+					if (isAlerted == false) {
+						// Rerun checkFieldOfView when alerted with full view
+						alert();
+						return checkFieldOfView(board);
+					} else {
+						// Target closest
+						if (enemyTarget == position
+								|| getDistance(agent) < Coordinates.calculateDistance(position, enemyTarget)) {
+							enemyTarget = agent.getPosition();
+						}
+					}
+				}
+			}
+		}
+
+		return enemyTarget;
 	}
 
-	public Coordinates move(Direction dir) {
-		Coordinates targetField = new Coordinates(currentPosition.r + dir.dr, currentPosition.q + dir.dq);
-		currentPosition = targetField; // TODO needs to check that move is allowed.
+	@Override
+	public void kill() {
+		position = spawn;
+		resetPatrolRoute();
+		isAlerted = true;
+	}
+
+	private void makeMove(Gameboard board) {
+		if (position == patrolRoute.get(nextPatrolPoint)) {
+			// Waypoint reached, start from beginning if at end
+			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
+		}
+		Coordinates target = patrolRoute.get(nextPatrolPoint);
+		if (nearestEnemy != position) {
+			target = nearestEnemy;
+		}
+
+		LinkedList<Coordinates> path = board.calculatePath(position, target);
+		position = path.pollFirst();
+		directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
 		movesLeft = movesLeft - 1;
-		checkLineOfSight();
-		return currentPosition;
+		nearestEnemy = checkFieldOfView(board);
 	}
 
-	public void respawn() {
-		currentPosition = spawnPoint;
-		movesLeft = 0;
-		alerted = false;
-		directionOfView = Direction.TOPLEFT; // TODO should be in direction of next waypoint
-		// TODO Logic for respawning after being killed.
+	private boolean notices(Agent agent) {
+		boolean agentNoticed = false;
+		if (board.isVisible(position, agent.getPosition())) {
+			if (isAlerted == true) {
+				// 360° view
+				agentNoticed = true;
+			} else {
+				// In 180° view, line of sight must include one of three fields in front of guard.
+				HashMap<Integer, HashSet<Coordinates>> fieldsOnLineOfSight = LOSUtilities.getFieldsOnRay(position,
+						agent.getPosition());
+				HashSet<Coordinates> rayFieldsAtDistOne = fieldsOnLineOfSight.get(1);
+
+				Coordinates fieldInFront = position.getAdjacentInDirection(directionOfView);
+				LinkedList<Coordinates> fieldsInFront = (Coordinates.getCommonAdjacent(position, fieldInFront));
+				fieldsInFront.add(fieldInFront);
+
+				for (Coordinates fif : fieldsInFront) {
+					if (rayFieldsAtDistOne.contains(fif)) {
+						agentNoticed = true;
+					}
+				}
+			}
+		}
+		return agentNoticed;
 	}
 
-	public void startRound() {
-		/* Check if still alerted */
-		if (alerted == true) {
-			checkLOS_ALERTED();
+	/**
+	 * Sets target waypoint to patrol waypoint after current position, if current position is in patrol route. Else does
+	 * nothing.
+	 */
+	private void resetPatrolRoute() {
+		if (patrolRoute.contains(position)) {
+			nextPatrolPoint = patrolRoute.indexOf(position) + 1;
+		}
+	}
+
+	@Override
+	public void takeTurn(Gameboard board) {
+		nearestEnemy = checkFieldOfView(board);
+		if (isAlerted == false || nearestEnemy == position && isAlerted == true) {
+			// Reset alerted if enemy no longer in sight.
+			isAlerted = false;
+			movesLeft = movesPerTurn;
 		} else {
-			checkLineOfSight();
+			movesLeft = movesPerTurn + alertedBonus;
 		}
 
-		if (enemiesInSight == 0) {
-			alerted = false;
-			movesLeft = speed;
-			currentTarget = patrolRoute.get(0); // TODO must be the next one obviously, not always the first
-		} else {
-			alerted = true;
-			movesLeft = alertedSpeed;
-			currentTarget = nearestEnemy;
+		while (movesPerTurn > 0) {
+			makeMove(board);
 		}
-
-		/* Move along patrol or towards enemy */
-		while (movesLeft > 0) {
-			LinkedList<Coordinates> path = board.calculatePath(currentPosition, currentTarget);
-			Coordinates nextField = path.get(0);
-				
-			move(Direction.getDirectionFromCoordinates(nextField, currentPosition));}
-
 	}
 }

@@ -14,6 +14,7 @@ import java.util.TreeMap;
 public class Gameboard {
 
 	private Hashtable<Coordinates, Terrain> grid;
+	private LinkedList<Agent> gamePieces;
 
 	/**
 	 * Creates an empty gameboard.
@@ -33,6 +34,16 @@ public class Gameboard {
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	/**
+	 * Adds a standard guard as seen in Spar Wars.
+	 * 
+	 * @param spawn
+	 * @param route
+	 */
+	public void addGuard(Coordinates spawn, LinkedList<Coordinates> route) {
+		gamePieces.add(new Guard(spawn, route, this));
 	}
 
 	/**
@@ -67,7 +78,7 @@ public class Gameboard {
 		for (Coordinates cand : getMoveOptions(origin)) {
 			previousField.put(cand, origin);
 			realCostToField.put(cand, Coordinates.calculateDistance(origin, cand));
-			
+
 			Integer estimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
 			LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
 			candidateList.push(cand);
@@ -90,11 +101,12 @@ public class Gameboard {
 						if (realCostToField.containsKey(cand) == false || realCostToField.get(cand) > newRealCost) {
 							previousField.put(cand, current);
 							realCostToField.put(cand, newRealCost);
-							Integer newEstimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
-							if(pathCandidates.containsKey(newEstimatedCost)) {
+							Integer newEstimatedCost = Coordinates.calculateDistance(cand, target)
+									+ realCostToField.get(cand);
+							if (pathCandidates.containsKey(newEstimatedCost)) {
 								pathCandidates.get(newEstimatedCost).push(cand);
 							} else {
-								LinkedList<Coordinates>	candidateList = new LinkedList<Coordinates>();
+								LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
 								candidateList.push(cand);
 								pathCandidates.put(newEstimatedCost, candidateList);
 							}
@@ -251,8 +263,12 @@ public class Gameboard {
 
 		return visibleFields;
 	}
-	
+
 	public Hashtable<Coordinates, Terrain> getGrid() {
 		return grid;
+	}
+
+	public LinkedList<Agent> getAgents() {
+		return gamePieces;
 	}
 }
