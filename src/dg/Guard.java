@@ -146,7 +146,7 @@ public class Guard extends Agent {
 			movesLeft = movesPerTurn + alertedBonus;
 		}
 
-		while (movesPerTurn > 0) {
+		while (movesLeft > 0) {
 			makeMove();
 		}
 	}

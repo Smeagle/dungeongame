@@ -44,12 +44,12 @@ public class CoordinatesTest {
 	public void directionConstructorTest() {
 		Coordinates origin = new Coordinates(0, 0);
 
-		Coordinates topLeft = new Coordinates(-1, 0);
+		Coordinates topLeft = new Coordinates(0, -1);
 		assertEquals(topLeft, new Coordinates(origin, Direction.TOPLEFT));
 
 		assertNotEquals(topLeft, origin);
 
-		Coordinates topRight = new Coordinates(-1, 1);
+		Coordinates topRight = new Coordinates(1, -1);
 		assertEquals(topRight, new Coordinates(origin, Direction.TOPRIGHT));
 	}
 }
