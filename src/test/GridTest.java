@@ -137,44 +137,4 @@ public class GridTest {
 		assertEquals(false, visibleFields.contains(topRight));		
 	}
 
-	@Test
-	public void pathFindingTest() {
-		LinkedList<Coordinates> target = new LinkedList<Coordinates>();
-
-		LinkedList<Coordinates> calculatedPath = board.calculatePath(viewPoint, viewPoint);
-		assertEquals(0, calculatedPath.size());
-		assertEquals("There should be no path to same field.", target, calculatedPath);
-
-		calculatedPath = board.calculatePath(viewPoint, center);
-		assertEquals(0, calculatedPath.size());
-		assertEquals("There should be no path to CENTER wall field.", target, calculatedPath);
-		
-		calculatedPath = board.calculatePath(viewPoint, right);
-		assertEquals(0, calculatedPath.size());
-		assertEquals("There should be no path to RIGHT, because it is a wall field.", target, calculatedPath);
-		
-		target.add(bottomLeft);
-		calculatedPath = board.calculatePath(viewPoint, bottomLeft);
-		assertEquals(1, calculatedPath.size());
-		assertEquals("The path to BOTTOMLEFT should just be BOTTOMLEFT.", target, calculatedPath);
-		
-		target.add(left);
-		calculatedPath = board.calculatePath(viewPoint, left);
-		assertEquals(2, calculatedPath.size());
-		assertEquals("The path to LEFT should be BOTTOMLEFT + LEFT.", target, calculatedPath);
-		
-		target.add(topLeft);
-		calculatedPath = board.calculatePath(viewPoint, topLeft);
-		assertEquals(3, calculatedPath.size());
-		assertEquals("The path to TOPLEFT should be BOTTOMLEFT + LEFT + TOPLEFT.", target, calculatedPath);
-		
-		target.add(topRight);
-		calculatedPath = board.calculatePath(viewPoint, topRight);
-		assertEquals(4, calculatedPath.size());
-		assertEquals("The path to TOPRIGHT should be BOTTOMLEFT + LEFT + TOPLEFT + TOPRIGHT.", target, calculatedPath);
-
-		exception.expect(IllegalArgumentException.class);
-		board.calculatePath(viewPoint, outOfBounds);
-	}
-
 }

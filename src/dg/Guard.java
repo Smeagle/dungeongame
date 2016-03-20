@@ -9,19 +9,27 @@ public class Guard extends Agent {
 	private Integer nextPatrolPoint;
 	private boolean isAlerted;
 	private Direction directionOfView;
-	private Gameboard board;
 	private Integer alertedBonus;
 	private Agent nearestEnemy;
 
-	public Guard(Coordinates spawnPoint, LinkedList<Coordinates> patrolRoute, Gameboard board) {
-		this.board = board;
-		this.position = spawnPoint;
+	public Guard(Coordinates spawnpoint, Gameboard board) {
+		super(spawnpoint,board);
+		this.position = spawnpoint;
 		this.affiliation = Affiliation.DUNGEON;
-		this.spawn = spawnPoint;
+		patrolRoute = new LinkedList<Coordinates>();
+		resetPatrolRoute();
+		this.isAlerted = false;
+		this.movesPerTurn = 2;
+		this.alertedBonus = 3;
+		this.nearestEnemy = null;
+	}
+	
+	public Guard(Coordinates spawnpoint, LinkedList<Coordinates> patrolRoute, Gameboard board) {	
+		super(spawnpoint,board);
+		this.position = spawnpoint;
+		this.affiliation = Affiliation.DUNGEON;
 		this.patrolRoute = patrolRoute;
 		resetPatrolRoute();
-		this.directionOfView = Direction.getDirectionFromCoordinates(spawn,
-				calculatePath(spawnPoint, patrolRoute.get(nextPatrolPoint)).getFirst());
 		this.isAlerted = false;
 		this.movesPerTurn = 2;
 		this.alertedBonus = 3;
@@ -42,7 +50,7 @@ public class Guard extends Agent {
 	 * @param board
 	 * @return Coordinates of nearest enemy, or own position if no enemies in sight.
 	 */
-	private Agent checkFieldOfView(Gameboard board) {
+	private Agent checkFieldOfView() {
 		Agent nearestEnemy = null;
 
 		for (Agent agent : board.getAgents()) {
@@ -51,7 +59,7 @@ public class Guard extends Agent {
 					if (isAlerted == false) {
 						// Rerun checkFieldOfView when alerted with full view
 						alert();
-						return checkFieldOfView(board);
+						return checkFieldOfView();
 					} else {
 						// Target closest
 						if (nearestEnemy == null || getDistance(agent) < getDistance(nearestEnemy)) {
@@ -72,7 +80,7 @@ public class Guard extends Agent {
 		isAlerted = true;
 	}
 
-	private void makeMove(Gameboard board) {
+	private void makeMove() {
 		if (position == patrolRoute.get(nextPatrolPoint)) {
 			// Waypoint reached, start from beginning if at end
 			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
@@ -88,7 +96,7 @@ public class Guard extends Agent {
 		}
 		directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
 		movesLeft = movesLeft - 1;
-		nearestEnemy = checkFieldOfView(board);
+		nearestEnemy = checkFieldOfView();
 	}
 
 	private boolean notices(Agent agent) {
@@ -128,8 +136,8 @@ public class Guard extends Agent {
 	}
 
 	@Override
-	public void takeTurn(Gameboard board) {
-		nearestEnemy = checkFieldOfView(board);
+	public void takeTurn() {
+		nearestEnemy = checkFieldOfView();
 		if (isAlerted == false || nearestEnemy == null && isAlerted == true) {
 			// Reset alerted if enemy no longer in sight.
 			isAlerted = false;
@@ -139,7 +147,7 @@ public class Guard extends Agent {
 		}
 
 		while (movesPerTurn > 0) {
-			makeMove(board);
+			makeMove();
 		}
 	}
 

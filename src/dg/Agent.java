@@ -12,6 +12,11 @@ public abstract class Agent {
 	protected Integer movesPerTurn;
 	protected Integer movesLeft;
 
+	public Agent(Coordinates spawnpoint, Gameboard board) {
+		this.board = board;
+		this.spawn = spawnpoint;
+	}
+	
 	public Affiliation getAffiliation() {
 		return affiliation;
 	}
@@ -33,13 +38,11 @@ public abstract class Agent {
 	 * Call this method when it's the agents turn to make his move.
 	 * @param board Current state of the gameboard.
 	 */
-	public abstract void takeTurn(Gameboard board);
+	public abstract void takeTurn();
 	
 	public Integer getDistance(Agent agent) {
 		return Coordinates.calculateDistance(position, agent.getPosition());
 	}
-
-	
 
 	/**
 	 * Generates and returns the valid moves from the given Coordinates.
