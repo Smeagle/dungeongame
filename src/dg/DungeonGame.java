@@ -14,5 +14,7 @@ public class DungeonGame {
 		
 		// GUI starten f�r Anzeige des Bretts
 		Frame.init();
+		
+		GameState.startGame();
 	}
 }

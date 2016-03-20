@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import dg.GameState;
+
 public class Frame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -46,6 +48,7 @@ public class Frame extends JFrame {
 				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					System.exit(0);
 				}
+				GameState.getActiveAgent().onKeyPressed(e);
 			}
 		});
 		
