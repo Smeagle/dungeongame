@@ -16,7 +16,7 @@ import dg.Gameboard;
 import dg.Guard;
 import dg.Terrain;
 
-public class GuardTest {
+public class AgentTest {
 	Gameboard board;
 	Coordinates center;
 	Coordinates topLeft;

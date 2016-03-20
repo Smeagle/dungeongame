@@ -14,6 +14,7 @@ public class Gameboard {
 
 	private Hashtable<Coordinates, Terrain> grid;
 	private LinkedList<Agent> gamePieces;
+	private LinkedList<Agent> killedPlayers;
 
 	/**
 	 * Creates an empty gameboard.
@@ -34,6 +35,32 @@ public class Gameboard {
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	/**
+	 * Adds a standard guard as seen in Spar Wars.
+	 * 
+	 * @param spawn
+	 * @param route
+	 */
+	public void addPlayer(Coordinates spawn, String identity) {
+		gamePieces.add(new Player(spawn, this, identity));
+	}
+	
+
+	/**
+	 * Adds a standard guard as seen in Spar Wars.
+	 * 
+	 * @param spawn
+	 * @param route
+	 */
+	public void playerKilled(Player killedPlayer) {
+		killedPlayers.add(killedPlayer);
+		gamePieces.remove(killedPlayer);
+	}
+	
+	public LinkedList<Agent> getKilledPlayers() {
+		return killedPlayers;
 	}
 
 	/**

@@ -150,32 +150,4 @@ public class Guard extends Agent {
 			makeMove();
 		}
 	}
-
-	/**
-	 * Generates and returns the valid moves from the given Coordinates.
-	 * 
-	 * @param c
-	 *            Field for which move options are requested.
-	 * @return Coordinates of empty neighboring fields.
-	 */
-	@Override
-	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
-		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
-
-		for (Coordinates neighbor : board.getNeighbors(c)) {
-			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
-				boolean isOccupiedByFriend = false;
-				for (Agent agent : board.getAgents()) {
-					if (agent.getPosition() == neighbor && agent.getAffiliation() == Affiliation.DUNGEON) {
-						isOccupiedByFriend = true;
-					}
-				}
-				if (false == isOccupiedByFriend) {
-					moveOptions.add(neighbor);
-				}
-			}
-		}
-
-		return moveOptions;
-	}
 }

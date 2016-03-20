@@ -45,23 +45,32 @@ public abstract class Agent {
 	}
 
 	/**
-	 * Generates and returns the valid moves from the given Coordinates.
+	 * Generates and returns the valid moves from the given Coordinates. Can't move through friendly units.
 	 * 
 	 * @param c
 	 *            Field for which move options are requested.
 	 * @return Coordinates of empty neighboring fields.
 	 */
-	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
+		protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
 		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
 
 		for (Coordinates neighbor : board.getNeighbors(c)) {
 			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
-				moveOptions.add(neighbor);
+				boolean isOccupiedByFriend = false;
+				for (Agent agent : board.getAgents()) {
+					if (agent.getPosition() == neighbor && agent.getAffiliation() == affiliation) {
+						isOccupiedByFriend = true;
+					}
+				}
+				if (false == isOccupiedByFriend) {
+					moveOptions.add(neighbor);
+				}
 			}
 		}
 
 		return moveOptions;
 	}
+	
 
 	/**
 	 * @param origin
