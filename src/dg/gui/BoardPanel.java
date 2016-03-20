@@ -1,12 +1,14 @@
 package dg.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -20,9 +22,30 @@ import dg.Terrain;
 public class BoardPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-
-	public BoardPanel() {
+	
+	private static BoardPanel instance = null;
+	
+	static double translateX = 0;
+	static double translateY = 0;
+	static double scale = 1;
+	
+	public static BoardPanel getInstance() {
+		if (instance == null) {
+			instance = new BoardPanel();
+		}
+		return instance;
+	}
+	
+	private BoardPanel() {
 		this.setBackground(Color.black);
+		
+		Dimension fullscreenDim = GUIUtils.getFullScreenBounds();
+		translateX = fullscreenDim.getWidth() / 2;
+		translateY = fullscreenDim.getHeight() / 2;
+		
+		this.addMouseMotionListener(BoardMouseListener.getInstance());
+		this.addMouseListener(BoardMouseListener.getInstance());
+		this.addMouseWheelListener(BoardMouseListener.getInstance());
 	}
 	
 	@Override
@@ -35,7 +58,8 @@ public class BoardPanel extends JPanel {
 	             RenderingHints.VALUE_ANTIALIAS_ON);
 	    g2.setRenderingHints(rh);
 		
-		g2.translate(200, 200);
+		g2.translate(translateX, translateY);
+		g2.scale(scale, scale);
 		
 		double r = 50;
 		double h = Math.sqrt(r * r - r * r / 4);
@@ -58,13 +82,16 @@ public class BoardPanel extends JPanel {
 			g2.setColor(Color.white);
 			g2.draw(hex);
 			
+			g2.scale(1 / scale, 1 / scale);
 			if (grid.get(c) == Terrain.WALL) {
 				g2.setColor(Color.yellow);
 			}
 			else {
 				g2.setColor(Color.white);
 			}
-			g2.drawString(c.toString(), 0f, 0f);
+			String string = c.toString();
+			Rectangle2D stringRect = g2.getFontMetrics().getStringBounds(string, null);
+			g2.drawString(string, (int) (-stringRect.getWidth() / 2), (int) (stringRect.getHeight() / 2));
 			
 			g2.setTransform(transform); // restore transform
 		}

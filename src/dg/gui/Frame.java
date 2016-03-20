@@ -36,7 +36,7 @@ public class Frame extends JFrame {
 	}
 	
 	private Frame() {
-		this.add(new BoardPanel());
+		this.add(BoardPanel.getInstance());
 		this.setDefaultCloseOperation(Frame.EXIT_ON_CLOSE);
 		
 		// exit on escape key
@@ -50,7 +50,7 @@ public class Frame extends JFrame {
 		});
 		
 		this.pack();
-		this.setSize(500, 500);
+		this.setSize(GUIUtils.getFullScreenBounds());
 		this.setVisible(true);
 	}
 	
