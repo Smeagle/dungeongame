@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
@@ -23,6 +24,8 @@ public class BoardPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
+	private static final boolean DRAW_TEXTS = false;
+	
 	private static BoardPanel instance = null;
 	
 	static double translateX = 0;
@@ -37,7 +40,7 @@ public class BoardPanel extends JPanel {
 	}
 	
 	private BoardPanel() {
-		this.setBackground(Color.black);
+		this.setBackground(Color.decode("#6F4E37")); // coffee brown!
 		
 		Dimension fullscreenDim = GUIUtils.getFullScreenBounds();
 		translateX = fullscreenDim.getWidth() / 2;
@@ -79,19 +82,26 @@ public class BoardPanel extends JPanel {
 			
 			g2.translate(tx, ty);
 			
-			g2.setColor(Color.white);
+			// coord image
+			Image image = ImageCache.getImage(c, grid.get(c));;
+			if (image != null) {
+				g2.setClip(hex);
+				g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
+			}
+			g2.setClip(null);
+			
+			// grid
+			g2.setColor(Color.black);
 			g2.draw(hex);
 			
-			g2.scale(1 / scale, 1 / scale);
-			if (grid.get(c) == Terrain.WALL) {
-				g2.setColor(Color.yellow);
-			}
-			else {
+			if (DRAW_TEXTS) {
+				// text
+				g2.scale(1 / scale, 1 / scale);
 				g2.setColor(Color.white);
+				String string = c.toString();
+				Rectangle2D stringRect = g2.getFontMetrics().getStringBounds(string, null);
+				g2.drawString(string, (int) (-stringRect.getWidth() / 2), (int) (stringRect.getHeight() / 2));
 			}
-			String string = c.toString();
-			Rectangle2D stringRect = g2.getFontMetrics().getStringBounds(string, null);
-			g2.drawString(string, (int) (-stringRect.getWidth() / 2), (int) (stringRect.getHeight() / 2));
 			
 			g2.setTransform(transform); // restore transform
 		}
