@@ -25,8 +25,7 @@ public class LOSUtilities {
 			// Leverages that Directions are in circular order
 			Coordinates adjacent_one = new Coordinates(c, Direction.values()[i]);
 			Coordinates adjacent_two = new Coordinates(c, Direction.values()[(i + 1) % (Direction.values().length)]);
-			Coordinates corner = new Coordinates((c.r + adjacent_one.r + adjacent_two.r),
-					(c.q + adjacent_one.q + adjacent_two.q));
+			Coordinates corner = new Coordinates((c.q + adjacent_one.q + adjacent_two.q),(c.r + adjacent_one.r + adjacent_two.r));
 
 			corners.add(corner);
 		}
@@ -79,8 +78,8 @@ public class LOSUtilities {
 		HashMap<Integer, HashSet<Coordinates>> fieldsOnLine = new HashMap<Integer, HashSet<Coordinates>>();
 
 		Integer dist = Coordinates.calculateDistance(rayOrigin, rayTarget);
-		Integer dr = rayTarget.r - rayOrigin.r;
 		Integer dq = rayTarget.q - rayOrigin.q;
+		Integer dr = rayTarget.r - rayOrigin.r;
 		
 		if (rayOrigin == rayTarget) {
 			// Duh, looking at myself.
@@ -91,7 +90,7 @@ public class LOSUtilities {
 			// Yay, that's a straight line!
 			for (int i = 0; i < dist + 1; i++) {
 				HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
-				fieldsAtSameDist.add(new Coordinates(rayOrigin.r + i * dr / dist, rayOrigin.q + i * dq / dist));
+				fieldsAtSameDist.add(new Coordinates(rayOrigin.q + i * dq / dist, rayOrigin.r + i * dr / dist));
 				fieldsOnLine.put(i, fieldsAtSameDist);
 			}
 		} else if (dr == dq || -2 * dr == dq || -2 * dq == dr) {
@@ -103,8 +102,8 @@ public class LOSUtilities {
 			Coordinates lastIntersected = rayOrigin;
 			for (int i = 1; i < dist + 1; i++) {
 				if (i % 2 == 0) {
-					Coordinates currentIntersected = new Coordinates(rayOrigin.r + (i * dr) / dist, rayOrigin.q
-							+ (i * dq) / dist);
+					Coordinates currentIntersected = new Coordinates(rayOrigin.q + (i * dq) / dist, rayOrigin.r
+							+ (i * dr) / dist);
 					fieldsAtSameDist = new HashSet<Coordinates>();
 					for (Coordinates touching : Coordinates.getCommonAdjacent(lastIntersected, currentIntersected)) {
 						fieldsAtSameDist.add(touching);
@@ -122,7 +121,7 @@ public class LOSUtilities {
 			// Check slanted rectangle between origin and target
 			for (int range_r = Math.min(rayOrigin.r, rayTarget.r); range_r < Math.max(rayOrigin.r, rayTarget.r) + 1; range_r++) {
 				for (int range_q = Math.min(rayOrigin.q, rayTarget.q); range_q < Math.max(rayOrigin.q, rayTarget.q) + 1; range_q++) {
-					Coordinates cand = new Coordinates(range_r, range_q);
+					Coordinates cand = new Coordinates(range_q, range_r);
 					if (Intersection.CLEAR != intersects(rayOrigin, rayTarget, cand)) {
 						HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
 						fieldsAtSameDist.add(cand);
