@@ -65,6 +65,10 @@ public class Coordinates {
 		}
 		return adjacentFields;
 	}
+	
+	public Coordinates getAdjacentInDirection(Direction dir) {
+		return new Coordinates(this.r + dir.dr, this.q + dir.dq);
+	}
 
 	public static LinkedList<Coordinates> getCommonAdjacent(Coordinates a, Coordinates b) {
 		LinkedList<Coordinates> commonAdjacentFields = new LinkedList<Coordinates>();
