@@ -11,7 +11,7 @@ public class Guard extends Agent {
 	private Direction directionOfView;
 	private Gameboard board;
 	private Integer alertedBonus;
-	private Coordinates nearestEnemy;
+	private Agent nearestEnemy;
 
 	public Guard(Coordinates spawnPoint, LinkedList<Coordinates> patrolRoute, Gameboard board) {
 		this.board = board;
@@ -21,11 +21,11 @@ public class Guard extends Agent {
 		this.patrolRoute = patrolRoute;
 		resetPatrolRoute();
 		this.directionOfView = Direction.getDirectionFromCoordinates(spawn,
-				board.calculatePath(spawnPoint, patrolRoute.get(nextPatrolPoint)).getFirst());
+				calculatePath(spawnPoint, patrolRoute.get(nextPatrolPoint)).getFirst());
 		this.isAlerted = false;
 		this.movesPerTurn = 2;
 		this.alertedBonus = 3;
-		this.nearestEnemy = position;
+		this.nearestEnemy = null;
 	}
 
 	public void alert() {
@@ -42,8 +42,8 @@ public class Guard extends Agent {
 	 * @param board
 	 * @return Coordinates of nearest enemy, or own position if no enemies in sight.
 	 */
-	private Coordinates checkFieldOfView(Gameboard board) {
-		Coordinates enemyTarget = position;
+	private Agent checkFieldOfView(Gameboard board) {
+		Agent nearestEnemy = null;
 
 		for (Agent agent : board.getAgents()) {
 			if (agent.getAffiliation() == Affiliation.PLAYER) {
@@ -54,16 +54,15 @@ public class Guard extends Agent {
 						return checkFieldOfView(board);
 					} else {
 						// Target closest
-						if (enemyTarget == position
-								|| getDistance(agent) < Coordinates.calculateDistance(position, enemyTarget)) {
-							enemyTarget = agent.getPosition();
+						if (nearestEnemy == null || getDistance(agent) < getDistance(nearestEnemy)) {
+							nearestEnemy = agent;
 						}
 					}
 				}
 			}
 		}
 
-		return enemyTarget;
+		return nearestEnemy;
 	}
 
 	@Override
@@ -79,12 +78,14 @@ public class Guard extends Agent {
 			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
 		}
 		Coordinates target = patrolRoute.get(nextPatrolPoint);
-		if (nearestEnemy != position) {
-			target = nearestEnemy;
+		if (nearestEnemy != null) {
+			target = nearestEnemy.getPosition();
 		}
-
-		LinkedList<Coordinates> path = board.calculatePath(position, target);
+		LinkedList<Coordinates> path = calculatePath(position, target);
 		position = path.pollFirst();
+		if (nearestEnemy.getPosition() == position) {
+			nearestEnemy.kill();
+		}
 		directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
 		movesLeft = movesLeft - 1;
 		nearestEnemy = checkFieldOfView(board);
@@ -129,7 +130,7 @@ public class Guard extends Agent {
 	@Override
 	public void takeTurn(Gameboard board) {
 		nearestEnemy = checkFieldOfView(board);
-		if (isAlerted == false || nearestEnemy == position && isAlerted == true) {
+		if (isAlerted == false || nearestEnemy == null && isAlerted == true) {
 			// Reset alerted if enemy no longer in sight.
 			isAlerted = false;
 			movesLeft = movesPerTurn;
@@ -140,5 +141,33 @@ public class Guard extends Agent {
 		while (movesPerTurn > 0) {
 			makeMove(board);
 		}
+	}
+
+	/**
+	 * Generates and returns the valid moves from the given Coordinates.
+	 * 
+	 * @param c
+	 *            Field for which move options are requested.
+	 * @return Coordinates of empty neighboring fields.
+	 */
+	@Override
+	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
+		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
+
+		for (Coordinates neighbor : board.getNeighbors(c)) {
+			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
+				boolean isOccupiedByFriend = false;
+				for (Agent agent : board.getAgents()) {
+					if (agent.getPosition() == neighbor && agent.getAffiliation() == Affiliation.DUNGEON) {
+						isOccupiedByFriend = true;
+					}
+				}
+				if (false == isOccupiedByFriend) {
+					moveOptions.add(neighbor);
+				}
+			}
+		}
+
+		return moveOptions;
 	}
 }
