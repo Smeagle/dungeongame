@@ -83,7 +83,7 @@ public class BoardPanel extends JPanel {
 			g2.translate(tx, ty);
 			
 			// coord image
-			Image image = ImageCache.getImage(c, grid.get(c));;
+			Image image = ImageCache.getImage(c, grid.get(c));
 			if (image != null) {
 				g2.setClip(hex);
 				g2.rotate(GUIUtils.getWallRotation(c) * (2 * Math.PI / 6));

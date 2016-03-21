@@ -3,6 +3,8 @@ package dg.gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import dg.Coordinates;
 import dg.GameState;
@@ -11,6 +13,8 @@ import dg.Terrain;
 
 public class GUIUtils {
 
+	private static Map<Coordinates, Integer> rotationCache = new HashMap<Coordinates, Integer>();
+	
 	public static Dimension getFullScreenBounds() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = (int) screenSize.getWidth();
@@ -21,7 +25,11 @@ public class GUIUtils {
 	
 	//---------------------------------------------------------------------------------------
 	// wall string stuff
-	static double getWallRotation(Coordinates coords) {
+	static int getWallRotation(Coordinates coords) {
+		if (rotationCache.containsKey(coords)) {
+			return rotationCache.get(coords);
+		}
+		
 		String wallString = getWallString(coords);
 		
 		String[] imageWallStrings = new String[] {
@@ -32,14 +40,17 @@ public class GUIUtils {
 		};
 		Arrays.sort(imageWallStrings);
 		
+		int rotation = 0;
 		for (int i = 0; i < wallString.length(); i++) {
 			if (Arrays.binarySearch(imageWallStrings, wallString) >= 0) {
-				return i;
+				rotation = i;
+				break;
 			}
 			wallString = wallString.substring(1) + wallString.charAt(0);
 		}
-		
-		return 0;
+
+		rotationCache.put(coords, rotation);
+		return rotation;
 	}
 	
 	/**

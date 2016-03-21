@@ -35,6 +35,8 @@ public class ImageCache {
 	
 	private static Hashtable<String, Image> cache = new Hashtable<String, Image>();
 	
+	private static Hashtable<Coordinates, Image> coordinatesCache = new Hashtable<Coordinates, Image>();
+	
 	static Image getImage(String name) {
 		if (cache.containsKey(name)) {
 			return cache.get(name);
@@ -51,14 +53,25 @@ public class ImageCache {
 	}
 
 	static Image getImage(Coordinates coords, Terrain terrain) {
+		if (coordinatesCache.containsKey(coords)) {
+			return coordinatesCache.get(coords);
+		}
+		
+		Image image = null;
 		switch (terrain) {
 		case FLOOR:
-			return getImage(ImageCache.FLOOR);
+			image = getImage(ImageCache.FLOOR);
+			break;
 		case WALL:
-			return getWallImage(coords);
+			image = getWallImage(coords);
+			break;
 		default:
-			return null;
+			image = null;
+			break;
 		}
+		
+		coordinatesCache.put(coords, image);
+		return image;
 	}
 	
 	private static Image getWallImage(Coordinates coords) {
