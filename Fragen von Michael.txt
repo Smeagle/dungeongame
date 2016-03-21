@@ -1,9 +1,0 @@
-Fragen von Michael
-------------------
-
-Bitte beantworten :)
-
-=> muss man bei einer privaten Eigenschaft nicht innerhalb der klasse mit "this." zugreifen.
-Ist mir aufgefallen in "Gameboard.addField()". Im Konstruktor wird das doch so gemacht?
-
-=> Bitte nur Stände pushen, bei denen das Programm läuft!
