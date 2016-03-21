@@ -27,13 +27,13 @@ public class DevUtilities {
 		Coordinates bottomLeft = new Coordinates(center, Direction.BOTTOMLEFT);
 		Coordinates bottomRight = new Coordinates(center, Direction.BOTTOMRIGHT);
 
-		board.addField(topLeft, Terrain.FLOOR);
-		board.addField(topRight, Terrain.FLOOR);
-		board.addField(left, Terrain.FLOOR);
-		board.addField(center, Terrain.WALL);
-		board.addField(right, Terrain.WALL);
+		board.addField(center, Terrain.FLOOR);
+		board.addField(topLeft, Terrain.WALL);
+		board.addField(topRight, Terrain.WALL);
+		board.addField(left, Terrain.WALL);
+		board.addField(right, Terrain.FLOOR);
 		board.addField(bottomLeft, Terrain.FLOOR);
-		board.addField(bottomRight, Terrain.FLOOR);
+		board.addField(bottomRight, Terrain.WALL);
 		
 		return board;
 	}

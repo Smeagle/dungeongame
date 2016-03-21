@@ -1,5 +1,6 @@
 package dg;
 
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
@@ -39,6 +40,12 @@ public abstract class Agent {
 	 * @param board Current state of the gameboard.
 	 */
 	public abstract void takeTurn();
+	
+	/**
+	 * This method is called on key press if the agent is active.
+	 * @param e the key event
+	 */
+	public abstract void onKeyPressed(KeyEvent e);
 	
 	public Integer getDistance(Agent agent) {
 		return Coordinates.calculateDistance(position, agent.getPosition());

@@ -1,5 +1,6 @@
 package dg;
 
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -178,4 +179,10 @@ public class Guard extends Agent {
 
 		return moveOptions;
 	}
+
+	@Override
+	public void onKeyPressed(KeyEvent e) {
+		// do nothing, this is a computer agent
+	}
+	
 }
