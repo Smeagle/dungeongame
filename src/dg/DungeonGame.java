@@ -12,8 +12,7 @@ public class DungeonGame {
 		// Spielbrett laden
 		GameState.setBoard(DevUtilities.getDevGameboard());
 		
-		// GUI starten für Anzeige des Bretts
+		// GUI starten fï¿½r Anzeige des Bretts
 		Frame.init();
 	}
-	
 }

@@ -7,7 +7,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	GridTest.class,
 	CoordinatesTest.class,
-	LOSUtilitiesTest.class
+	LOSUtilitiesTest.class,
+	GuardTest.class
 })
 
 public class AllTests {
