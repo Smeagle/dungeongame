@@ -31,6 +31,7 @@ public class Gameboard {
 	 */
 	public void addField(Coordinates c, Terrain t) throws IllegalArgumentException {
 		if (false == grid.containsKey(c)) {
+			System.out.println("Adding field " + c.toString() + ", Terrain is " + t);
 			grid.put(c, t);
 		} else {
 			throw new IllegalArgumentException();
