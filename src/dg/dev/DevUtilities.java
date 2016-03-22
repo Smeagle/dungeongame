@@ -1,5 +1,7 @@
 package dg.dev;
 
+import java.util.LinkedList;
+
 import dg.Coordinates;
 import dg.Direction;
 import dg.Gameboard;
@@ -34,6 +36,16 @@ public class DevUtilities {
 		board.addField(right, Terrain.FLOOR);
 		board.addField(bottomLeft, Terrain.FLOOR);
 		board.addField(bottomRight, Terrain.WALL);
+		
+		// test: adding guard
+		Coordinates guardCoordinates = new Coordinates(0, -1);
+		
+		LinkedList<Coordinates> route = new LinkedList<Coordinates>();
+		route.add(new Coordinates(-1,  0));
+		route.add(new Coordinates(0,  -1));
+		route.add(new Coordinates(1,  -1));
+		
+		board.addGuard(guardCoordinates, route);
 		
 		return board;
 	}
