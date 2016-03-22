@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import dg.Coordinates;
 import dg.Direction;
 import dg.GameBoardUtils;

@@ -16,7 +16,7 @@ public abstract class Agent {
 		this.board = board;
 		this.spawn = spawnpoint;
 	}
-	
+
 	public Affiliation getAffiliation() {
 		return affiliation;
 	}
@@ -28,18 +28,20 @@ public abstract class Agent {
 	public Coordinates getSpawn() {
 		return spawn;
 	}
-	
+
 	/**
 	 * Call this method when agent is killed.
 	 */
 	public abstract void kill();
-	
+
 	/**
 	 * Call this method when it's the agents turn to make his move.
-	 * @param board Current state of the gameboard.
+	 * 
+	 * @param board
+	 *            Current state of the gameboard.
 	 */
 	public abstract void takeTurn();
-	
+
 	public Integer getDistance(Agent agent) {
 		return Coordinates.calculateDistance(position, agent.getPosition());
 	}
@@ -51,11 +53,11 @@ public abstract class Agent {
 	 *            Field for which move options are requested.
 	 * @return Coordinates of empty neighboring fields.
 	 */
-		protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
+	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
 		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
 
 		for (Coordinates neighbor : board.getNeighbors(c)) {
-			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
+			if (board.getTerrain(neighbor) == Terrain.FLOOR || board.getTerrain(neighbor) == Terrain.EXIT) {
 				boolean isOccupiedByFriend = false;
 				for (Agent agent : board.getAgents()) {
 					if (agent.getPosition() == neighbor && agent.getAffiliation() == affiliation) {
@@ -70,7 +72,6 @@ public abstract class Agent {
 
 		return moveOptions;
 	}
-	
 
 	/**
 	 * @param origin
@@ -107,7 +108,7 @@ public abstract class Agent {
 
 			Integer estimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
 			LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
-			candidateList.push(cand);
+			candidateList.add(cand);
 			pathCandidates.put(estimatedCost, candidateList);
 		}
 
@@ -130,10 +131,10 @@ public abstract class Agent {
 							Integer newEstimatedCost = Coordinates.calculateDistance(cand, target)
 									+ realCostToField.get(cand);
 							if (pathCandidates.containsKey(newEstimatedCost)) {
-								pathCandidates.get(newEstimatedCost).push(cand);
+								pathCandidates.get(newEstimatedCost).add(cand);
 							} else {
 								LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
-								candidateList.push(cand);
+								candidateList.add(cand);
 								pathCandidates.put(newEstimatedCost, candidateList);
 							}
 						}
@@ -160,5 +161,4 @@ public abstract class Agent {
 		return bestPath;
 	}
 
-	
 }
