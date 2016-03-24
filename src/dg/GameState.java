@@ -9,6 +9,10 @@ public class GameState {
 	
 	private static Agent activeAgent;
 	
+	private static Coordinates mouseoverCoordinates;
+	
+	private static Coordinates selectionCoordinates;
+	
 	/**
 	 * Startet das Spiel. Das Brett und Figuren etc. müssen schon aufgestellt sein.
 	 */
@@ -47,6 +51,22 @@ public class GameState {
 
 	public static Agent getActiveAgent() {
 		return activeAgent;
+	}
+
+	public static void setMouseoverCoordinates(Coordinates c) {
+		mouseoverCoordinates = c;
+	}
+
+	public static Coordinates getMouseoverCoordinates() {
+		return mouseoverCoordinates;
+	}
+
+	public static Coordinates getSelectionCoordinates() {
+		return selectionCoordinates;
+	}
+
+	public static void setSelectionCoordinates(Coordinates selectionCoordinates) {
+		GameState.selectionCoordinates = selectionCoordinates;
 	}
 	
 }

@@ -6,6 +6,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import dg.Coordinates;
+import dg.GameState;
+
 public class BoardMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
 
 	private static BoardMouseListener instance = null;
@@ -27,6 +30,14 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	}
 	
 	private BoardMouseListener() {};
+	
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		BoardPanel.mouseX = e.getX();
+		BoardPanel.mouseY = e.getY();
+		BoardPanel.updateMouseoverCoordinates(); // maybe optimize later (move into thread)
+		BoardPanel.getInstance().repaint();
+	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -76,10 +87,11 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
+		Coordinates c = GameState.getMouseoverCoordinates();
+		if (c != null) {
+			GameState.setSelectionCoordinates(c);
+		}
+		BoardPanel.getInstance().repaint();
 	}
 
 }
