@@ -38,14 +38,12 @@ public class DevUtilities {
 		board.addField(bottomRight, Terrain.WALL);
 		
 		// test: adding guard
-		Coordinates guardCoordinates = new Coordinates(0, -1);
-		
+		Coordinates guardCoordinates = new Coordinates(0, 0);
 		LinkedList<Coordinates> route = new LinkedList<Coordinates>();
 		route.add(new Coordinates(-1,  0));
 		route.add(new Coordinates(0,  -1));
 		route.add(new Coordinates(1,  -1));
-		
-//		board.addGuard(guardCoordinates, route);
+		board.addGuard(guardCoordinates, route);
 		
 		return board;
 	}

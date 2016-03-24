@@ -42,6 +42,11 @@ public abstract class Agent {
 	public abstract void takeTurn();
 	
 	/**
+	 * The image to paint for this character.
+	 */
+	public abstract String getImage();
+	
+	/**
 	 * This method is called on key press if the agent is active.
 	 * @param e the key event
 	 */

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import dg.gui.ImageCache;
+
 public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
 	private Integer nextPatrolPoint;
@@ -183,6 +185,11 @@ public class Guard extends Agent {
 	@Override
 	public void onKeyPressed(KeyEvent e) {
 		// do nothing, this is a computer agent
+	}
+
+	@Override
+	public String getImage() {
+		return ImageCache.GUARD;
 	}
 	
 }

@@ -16,7 +16,7 @@ public class DungeonGame {
 		// GUI starten f�r Anzeige des Bretts
 		Frame.init();
 		
-		GameState.startGame();
+//		GameState.startGame();
 		
 		// for demo and test a selection listener:
 		GameState.addSelectionListener(new Callback() {

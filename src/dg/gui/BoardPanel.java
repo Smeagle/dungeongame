@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import dg.Agent;
 import dg.Coordinates;
 import dg.GameState;
 import dg.Terrain;
@@ -29,7 +30,7 @@ public class BoardPanel extends JPanel {
 	
 	private static final double HEX_RADIUS = 50;
 	
-	private static final boolean DRAW_TEXTS = true;
+	private static final boolean DRAW_TEXTS = false;
 	private static final boolean DRAW_MOUSE = false;
 	
 	private static final boolean DRAW_MOUSEOVER = true;
@@ -139,6 +140,20 @@ public class BoardPanel extends JPanel {
 			g2.draw(hexTransform.createTransformedShape(hex));
 		}
 		
+		// agents
+		for (Agent agent : GameState.getBoard().getAgents()) {
+			Image image = ImageCache.getImage(agent.getImage());
+			if (image != null) {
+				Point2D hexOffset = getHexOffset(agent.getPosition());
+				AffineTransform t = getAgentTransform(hexOffset);
+				g2.setTransform(t);
+				double r = HEX_RADIUS;
+				double h = getTriangleHeight(HEX_RADIUS);
+				g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
+				g2.setTransform(new AffineTransform());
+			}
+		}
+		
 		// mouse
 		if (DRAW_MOUSE) {
 			g2.setColor(Color.white);
@@ -188,6 +203,14 @@ public class BoardPanel extends JPanel {
 		textTransform.translate(hexOffset.getX(), hexOffset.getY());
 		textTransform.scale(1 / scale, 1 / scale);
 		return textTransform;
+	}
+	
+	private AffineTransform getAgentTransform(Point2D hexOffset) {
+		AffineTransform transform = new AffineTransform();
+		transform.translate(translateX, translateY);
+		transform.scale(scale, scale);
+		transform.translate(hexOffset.getX(), hexOffset.getY());
+		return transform;
 	}
 	
 	private static Point2D getHexOffset(Coordinates c) {
