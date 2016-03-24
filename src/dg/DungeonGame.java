@@ -9,6 +9,7 @@ import dg.gui.Frame;
 public class DungeonGame {
 
 	public static void main(String... args) throws Exception {
+		
 		// Spielbrett laden
 		GameState.setBoard(DevUtilities.getDevGameboard());
 		
@@ -16,5 +17,14 @@ public class DungeonGame {
 		Frame.init();
 		
 		GameState.startGame();
+		
+		// for demo and test a selection listener:
+		GameState.addSelectionListener(new Callback() {
+			@Override
+			public void execute() {
+				System.out.println("selected coordinates are " + GameState.getSelectionCoordinates());
+			}
+		});
+		
 	}
 }

@@ -45,7 +45,7 @@ public class DevUtilities {
 		route.add(new Coordinates(0,  -1));
 		route.add(new Coordinates(1,  -1));
 		
-		board.addGuard(guardCoordinates, route);
+//		board.addGuard(guardCoordinates, route);
 		
 		return board;
 	}

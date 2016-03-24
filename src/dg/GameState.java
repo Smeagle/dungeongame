@@ -1,5 +1,8 @@
 package dg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Repräsentiert den aktuellen Spielzustand, enthält also das Brett, Figuren etc.
  */
@@ -12,6 +15,8 @@ public class GameState {
 	private static Coordinates mouseoverCoordinates;
 	
 	private static Coordinates selectionCoordinates;
+	
+	private static List<Callback> selectionListeners = new ArrayList<Callback>();
 	
 	/**
 	 * Startet das Spiel. Das Brett und Figuren etc. müssen schon aufgestellt sein.
@@ -41,6 +46,10 @@ public class GameState {
 		activeAgent.takeTurn();
 	}
 	
+	public static void addSelectionListener(Callback callback) {
+		selectionListeners.add(callback);
+	}
+	
 	public static void setBoard(Gameboard board) {
 		GameState.board = board;
 	}
@@ -66,7 +75,17 @@ public class GameState {
 	}
 
 	public static void setSelectionCoordinates(Coordinates selectionCoordinates) {
+		Coordinates oldValue = GameState.selectionCoordinates;
+		
 		GameState.selectionCoordinates = selectionCoordinates;
+		
+		if (oldValue == null && selectionCoordinates != null || oldValue != null && selectionCoordinates == null
+				|| !oldValue.equals(selectionCoordinates)) {
+			for (Callback callback : selectionListeners) {
+				callback.execute();
+			}
+		}
+		
 	}
 	
 }
