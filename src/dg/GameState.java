@@ -8,9 +8,13 @@ import java.util.List;
  */
 public class GameState {
 
+	private static boolean debugMode = false;
+	
 	private static Gameboard board;
 	
 	private static Agent activeAgent;
+	
+	private static Agent selectedAgent;
 	
 	private static Coordinates mouseoverCoordinates;
 	
@@ -73,12 +77,34 @@ public class GameState {
 	public static Coordinates getSelectionCoordinates() {
 		return selectionCoordinates;
 	}
+	
+	public static Agent getSelectedAgent() {
+		return selectedAgent;
+	}
+
+	public static boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public static void setDebugMode(boolean debugMode) {
+		GameState.debugMode = debugMode;
+	}
 
 	public static void setSelectionCoordinates(Coordinates selectionCoordinates) {
 		Coordinates oldValue = GameState.selectionCoordinates;
 		
 		GameState.selectionCoordinates = selectionCoordinates;
 		
+		// update selected agent
+		selectedAgent = null;
+		for (Agent a : board.getAgents()) {
+			if (a.getPosition().equals(selectionCoordinates)) {
+				selectedAgent = a;
+				break;
+			}
+		}
+		
+		// inform listeners
 		if (oldValue == null && selectionCoordinates != null || oldValue != null && selectionCoordinates == null
 				|| !oldValue.equals(selectionCoordinates)) {
 			for (Callback callback : selectionListeners) {
