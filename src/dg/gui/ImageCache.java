@@ -39,7 +39,7 @@ public class ImageCache {
 	
 	private static Hashtable<Coordinates, Image> coordinatesCache = new Hashtable<Coordinates, Image>();
 	
-	static Image getImage(String name) {
+	public static Image getImage(String name) {
 		if (cache.containsKey(name)) {
 			return cache.get(name);
 		}

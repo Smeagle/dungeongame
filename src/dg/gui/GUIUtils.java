@@ -2,6 +2,7 @@ package dg.gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,29 @@ public class GUIUtils {
 		return new Dimension(screenWidth, screenHeight);
 	}
 	
+	/**
+	 * Ermittelt die Höhe h eines gleichseitigen Dreiecks mit der Kantenlänge r.
+	 */
+	public static double getTriangleHeight(double r) {
+		return Math.sqrt(r * r - r * r / 4);
+	}
+	
+	/**
+	 * Ermittelt x und y des Mittelpunkts eines Hexfeldes.
+	 */
+	public static Point2D getHexOffset(Coordinates c) {
+		double r = Shapes.HEX_RADIUS;
+		double h = GUIUtils.getTriangleHeight(r);
+		double dqx = 2 * h;
+		double dqy = 0;
+		double drx = h;
+		double dry = r + r / 2;
+		
+		double tx = c.r * drx + c.q * dqx;
+		double ty = c.r * dry + c.q * dqy;
+		
+		return new Point2D.Double(tx, ty);
+	}
 	
 	//---------------------------------------------------------------------------------------
 	// wall string stuff

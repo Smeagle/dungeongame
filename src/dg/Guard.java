@@ -1,17 +1,24 @@
 package dg;
 
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import dg.gui.BoardPanel;
+import dg.gui.Colors;
+import dg.gui.GUIUtils;
 import dg.gui.ImageCache;
+import dg.gui.Shapes;
 
 public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
 	private Integer nextPatrolPoint;
 	private boolean isAlerted;
-	private Direction directionOfView;
+	private Direction directionOfView = Direction.BOTTOMLEFT;
 	private Integer alertedBonus;
 	private Agent nearestEnemy;
 
@@ -190,6 +197,103 @@ public class Guard extends Agent {
 	@Override
 	public String getImage() {
 		return ImageCache.GUARD;
+	}
+	
+	@Override
+	public void paintAgent(Graphics2D g2) {
+		// paint view direction
+		if (directionOfView != null) {
+			Point2D hexOffset = GUIUtils.getHexOffset(this.getPosition());
+			AffineTransform t = getDirectionTransform(hexOffset);
+			g2.setTransform(t);
+			g2.setColor(Colors.AGENT_VIEW_DIRECTION_POINTER);
+			g2.fill(Shapes.getShape(Shapes.VIEW_TRIANGLE));
+			g2.setTransform(new AffineTransform());
+		}
+		
+		super.paintAgent(g2);
+	}
+	
+	@Override
+	public void paintBeforeAgents(Graphics2D g2) {
+		if (GameState.isDebugMode()) {
+			if (position.equals(GameState.getSelectionCoordinates())) {
+				// field of view
+				for (Coordinates c : GameState.getBoard().getFieldOfView(position)) {
+					Point2D hexOffset = GUIUtils.getHexOffset(c);
+					AffineTransform t = BoardPanel.getHexTransform(c, hexOffset);
+					g2.setTransform(t);
+					g2.setColor(Colors.DEBUG_FIELD_OF_VIEW);
+					g2.fill(Shapes.getShape(Shapes.HEX));
+					g2.setTransform(new AffineTransform());
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void paintAfterAgents(Graphics2D g2) {
+		if (GameState.isDebugMode()) {
+			if (position.equals(GameState.getSelectionCoordinates())) {
+				// paint way points
+				for (Coordinates p : patrolRoute) {
+					Point2D hexOffset = GUIUtils.getHexOffset(p);
+					AffineTransform t = getWayPointTransform(hexOffset);
+					g2.setTransform(t);
+					g2.setColor(Colors.DEBUG_GUARD_WAYPOINT);
+					g2.fillOval(-10, -10, 20, 20);
+					g2.setTransform(new AffineTransform());
+				}
+			}
+		}
+	}
+	
+	private AffineTransform getWayPointTransform(Point2D hexOffset) {
+		AffineTransform transform = new AffineTransform();
+		transform.translate(BoardPanel.translateX, BoardPanel.translateY);
+		transform.scale(BoardPanel.scale, BoardPanel.scale);
+		transform.translate(hexOffset.getX(), hexOffset.getY());
+		return transform;
+	}
+	
+	private AffineTransform getDirectionTransform(Point2D hexOffset) {
+		AffineTransform transform = new AffineTransform();
+		transform.translate(BoardPanel.translateX, BoardPanel.translateY);
+		transform.scale(BoardPanel.scale, BoardPanel.scale);
+		transform.translate(hexOffset.getX(), hexOffset.getY());
+		transform.rotate(getDirectionRotation());
+		return transform;
+	}
+	
+	private double getDirectionRotation() {
+		double d = 2 * Math.PI / 12;
+		
+		int i = 0;
+		
+		switch (directionOfView) {
+		case BOTTOMLEFT:
+			i = 7;
+			break;
+		case BOTTOMRIGHT:
+			i = 5;
+			break;
+		case LEFT:
+			i = 9;
+			break;
+		case RIGHT:
+			i = 3;
+			break;
+		case TOPLEFT:
+			i = 11;
+			break;
+		case TOPRIGHT:
+			i = 1;
+			break;
+		default:
+			return 0;
+		}
+		
+		return i * d;
 	}
 	
 }

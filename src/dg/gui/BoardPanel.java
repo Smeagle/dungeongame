@@ -10,12 +10,9 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -28,23 +25,19 @@ public class BoardPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final double HEX_RADIUS = 50;
-	
 	private static final boolean DRAW_TEXTS = false;
 	private static final boolean DRAW_MOUSE = false;
 	
 	private static final boolean DRAW_MOUSEOVER = true;
-	private static final Color MOUSEOVER_COLOR = Color.white;
-	private static final Stroke MOUSEOVER_STROKE = new BasicStroke(1);
 	
-	private static final Color SELECTION_COLOR = Color.orange;
+	private static final Stroke MOUSEOVER_STROKE = new BasicStroke(1);
 	private static final Stroke SELECTION_STROKE = new BasicStroke(3);
 	
 	private static BoardPanel instance = null;
 	
-	static double translateX = 0;
-	static double translateY = 0;
-	static double scale = 1;
+	public static double translateX = 0;
+	public static double translateY = 0;
+	public static double scale = 1;
 
 	public static int mouseX = 0;
 	public static int mouseY = 0;
@@ -73,20 +66,20 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 
-		RenderingHints rh = new RenderingHints(
-	             RenderingHints.KEY_ANTIALIASING,
-	             RenderingHints.VALUE_ANTIALIAS_ON);
+		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		rh.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED));
+		rh.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR));
 	    g2.setRenderingHints(rh);
-		
+	    
 	    AffineTransform viewportTransform = new AffineTransform();
 	    viewportTransform.translate(translateX, translateY);
 	    viewportTransform.scale(scale, scale);
 		
-		Path2D hex = getHexPolygon();
+		Shape hex = Shapes.getShape(Shapes.HEX);
 		
 		Hashtable<Coordinates, Terrain> grid = GameState.getBoard().getGrid();
 		for (Coordinates c : grid.keySet()) {
-			Point2D hexOffset = getHexOffset(c);
+			Point2D hexOffset = GUIUtils.getHexOffset(c);
 			AffineTransform hexTransform = getHexTransform(c, hexOffset);
 			
 			// hex texture
@@ -94,8 +87,8 @@ public class BoardPanel extends JPanel {
 			if (image != null) {
 				g2.setTransform(hexTransform);
 				g2.setClip(hex);
-				double r = HEX_RADIUS;
-				double h = getTriangleHeight(HEX_RADIUS);
+				double r = Shapes.HEX_RADIUS;
+				double h = GUIUtils.getTriangleHeight(Shapes.HEX_RADIUS);
 				g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
 				g2.setTransform(new AffineTransform());
 				g2.setClip(null);
@@ -122,9 +115,9 @@ public class BoardPanel extends JPanel {
 		if (DRAW_MOUSEOVER) {
 			Coordinates c = GameState.getMouseoverCoordinates();
 			if (c != null) {
-				Point2D hexOffset = getHexOffset(c);
+				Point2D hexOffset = GUIUtils.getHexOffset(c);
 				AffineTransform hexTransform = getHexTransform(c, hexOffset);
-				g2.setColor(MOUSEOVER_COLOR);
+				g2.setColor(Colors.HEX_MOUSEOVER);
 				g2.setStroke(MOUSEOVER_STROKE);
 				g2.draw(hexTransform.createTransformedShape(hex));
 			}
@@ -133,25 +126,22 @@ public class BoardPanel extends JPanel {
 		// selection
 		Coordinates c = GameState.getSelectionCoordinates();
 		if (c != null) {
-			Point2D hexOffset = getHexOffset(c);
+			Point2D hexOffset = GUIUtils.getHexOffset(c);
 			AffineTransform hexTransform = getHexTransform(c, hexOffset);
-			g2.setColor(SELECTION_COLOR);
+			g2.setColor(Colors.HEX_SELECTION);
 			g2.setStroke(SELECTION_STROKE);
 			g2.draw(hexTransform.createTransformedShape(hex));
 		}
 		
 		// agents
 		for (Agent agent : GameState.getBoard().getAgents()) {
-			Image image = ImageCache.getImage(agent.getImage());
-			if (image != null) {
-				Point2D hexOffset = getHexOffset(agent.getPosition());
-				AffineTransform t = getAgentTransform(hexOffset);
-				g2.setTransform(t);
-				double r = HEX_RADIUS;
-				double h = getTriangleHeight(HEX_RADIUS);
-				g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
-				g2.setTransform(new AffineTransform());
-			}
+			agent.paintBeforeAgents(g2);
+		}
+		for (Agent agent : GameState.getBoard().getAgents()) {
+			agent.paintAgent(g2);
+		}
+		for (Agent agent : GameState.getBoard().getAgents()) {
+			agent.paintAfterAgents(g2);
 		}
 		
 		// mouse
@@ -163,7 +153,7 @@ public class BoardPanel extends JPanel {
 	};
 	
 	static void updateMouseoverCoordinates() {
-		Path2D hex = BoardPanel.getHexPolygon();
+		Shape hex = Shapes.getShape(Shapes.HEX);
 		Hashtable<Coordinates, Terrain> grid = GameState.getBoard().getGrid();
 		for (Coordinates c : grid.keySet()) {
 			if (BoardPanel.getTransformedHex(c, hex).contains(BoardPanel.mouseX, BoardPanel.mouseY)) {
@@ -174,20 +164,13 @@ public class BoardPanel extends JPanel {
 		GameState.setMouseoverCoordinates(null);
 	}
 	
-	static Shape getTransformedHex(Coordinates c, Path2D hex) {
-		Point2D hexOffset = getHexOffset(c);
+	private static Shape getTransformedHex(Coordinates c, Shape hex) {
+		Point2D hexOffset = GUIUtils.getHexOffset(c);
 		AffineTransform hexTransform = getHexTransform(c, hexOffset);
 		return hexTransform.createTransformedShape(hex);
 	}
-	
-	/**
-	 * Ermittelt die Höhe h eines gleichseitigen Dreiecks mit der Kantenlänge r.
-	 */
-	private static double getTriangleHeight(double r) {
-		return Math.sqrt(r * r - r * r / 4);
-	}
 
-	static AffineTransform getHexTransform(Coordinates c, Point2D hexOffset) {
+	public static AffineTransform getHexTransform(Coordinates c, Point2D hexOffset) {
 		AffineTransform hexTransform = new AffineTransform();
 		hexTransform.translate(translateX, translateY);
 		hexTransform.scale(scale, scale);
@@ -205,54 +188,4 @@ public class BoardPanel extends JPanel {
 		return textTransform;
 	}
 	
-	private AffineTransform getAgentTransform(Point2D hexOffset) {
-		AffineTransform transform = new AffineTransform();
-		transform.translate(translateX, translateY);
-		transform.scale(scale, scale);
-		transform.translate(hexOffset.getX(), hexOffset.getY());
-		return transform;
-	}
-	
-	private static Point2D getHexOffset(Coordinates c) {
-		double r = HEX_RADIUS;
-		double h = getTriangleHeight(r);
-		double dqx = 2 * h;
-		double dqy = 0;
-		double drx = h;
-		double dry = r + r / 2;
-		
-		double tx = c.r * drx + c.q * dqx;
-		double ty = c.r * dry + c.q * dqy;
-		
-		return new Point2D.Double(tx, ty);
-	}
-	
-	static Path2D getHexPolygon() {
-		// calculate points
-		List<Point2D> points = new ArrayList<Point2D>();
-		Point2D center = new Point2D.Double(0, 0);
-		for (int i = 0; i < 6; i++) {
-			points.add(hexCorner(center, HEX_RADIUS, i));
-		}
-
-		// build path
-		Path2D path = new Path2D.Double();
-
-		Point2D p = points.get(0);
-		path.moveTo(p.getX(), p.getY());
-		for (int i = 1; i < points.size(); i++) {
-			p = points.get(i);
-			path.lineTo(p.getX(), p.getY());
-		}
-		path.closePath();
-		
-		return path;
-	}
-	
-	private static Point2D hexCorner(Point2D center, double size, int i) {
-	    double angle_deg = 60 * i + 30;
-	    double angle_rad = Math.PI / 180 * angle_deg;
-	    return new Point2D.Double(center.getX() + size * Math.cos(angle_rad), center.getY() + size * Math.sin(angle_rad));
-	}
-
 }

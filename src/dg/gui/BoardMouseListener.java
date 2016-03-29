@@ -87,11 +87,13 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		Coordinates c = GameState.getMouseoverCoordinates();
-		if (c != null) {
-			GameState.setSelectionCoordinates(c);
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			Coordinates c = GameState.getMouseoverCoordinates();
+			if (c != null) {
+				GameState.setSelectionCoordinates(c);
+			}
+			BoardPanel.getInstance().repaint();
 		}
-		BoardPanel.getInstance().repaint();
 	}
 
 }

@@ -1,12 +1,7 @@
 package dg.gui;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-
-import dg.GameState;
 
 public class Frame extends JFrame {
 
@@ -42,15 +37,7 @@ public class Frame extends JFrame {
 		this.setDefaultCloseOperation(Frame.EXIT_ON_CLOSE);
 		
 		// exit on escape key
-		this.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					System.exit(0);
-				}
-				GameState.getActiveAgent().onKeyPressed(e);
-			}
-		});
+		this.addKeyListener(new BoardKeyListener());
 		
 		this.pack();
 		this.setSize(GUIUtils.getFullScreenBounds());
