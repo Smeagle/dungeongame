@@ -13,12 +13,15 @@ public class DungeonGame {
 		
 		// Spielbrett laden
 		GameState.setBoard(DevUtilities.getRandomGameboard(5));
-//		DevUtilities.addDevGuards();
+		
+		// Figuren drauf stellen
 		GameState.getBoard().addAgent(new Dummy(new Coordinates(1, 1), GameState.getBoard()));
+		DevUtilities.addDevGuards();
 		
 		// GUI starten fï¿½r Anzeige des Bretts
 		Frame.init();
 		
+		// Spielablauf an schmeißen
 		GameState.startGame();
 		
 		// for demo and test a selection listener:
