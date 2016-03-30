@@ -59,6 +59,9 @@ public class BoardPanel extends JPanel {
 		this.addMouseMotionListener(BoardMouseListener.getInstance());
 		this.addMouseListener(BoardMouseListener.getInstance());
 		this.addMouseWheelListener(BoardMouseListener.getInstance());
+		
+		this.addMouseMotionListener(MenuMouseListener.getInstance());
+		this.addMouseListener(MenuMouseListener.getInstance());
 	}
 	
 	@Override
@@ -144,6 +147,9 @@ public class BoardPanel extends JPanel {
 			agent.paintAfterAgents(g2);
 		}
 		
+		// menu
+		Menu.paintMenu(g2);
+				
 		// mouse
 		if (DRAW_MOUSE) {
 			g2.setColor(Color.white);

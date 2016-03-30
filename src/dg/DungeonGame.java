@@ -1,6 +1,7 @@
 package dg;
 
 import dg.dev.DevUtilities;
+import dg.dev.Dummy;
 import dg.gui.Frame;
 
 /**
@@ -12,7 +13,8 @@ public class DungeonGame {
 		
 		// Spielbrett laden
 		GameState.setBoard(DevUtilities.getRandomGameboard(5));
-		DevUtilities.addDevGuards();
+//		DevUtilities.addDevGuards();
+		GameState.getBoard().addAgent(new Dummy(new Coordinates(1, 1), GameState.getBoard()));
 		
 		// GUI starten f�r Anzeige des Bretts
 		Frame.init();

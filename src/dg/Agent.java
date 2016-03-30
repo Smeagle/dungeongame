@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import dg.gui.BoardPanel;
 import dg.gui.GUIUtils;
 import dg.gui.ImageCache;
+import dg.gui.Menu;
 import dg.gui.Shapes;
 
 public abstract class Agent {
@@ -25,6 +26,7 @@ public abstract class Agent {
 	public Agent(Coordinates spawnpoint, Gameboard board) {
 		this.board = board;
 		this.spawn = spawnpoint;
+		this.position = spawnpoint;
 	}
 	
 	public Affiliation getAffiliation() {
@@ -46,9 +48,17 @@ public abstract class Agent {
 	
 	/**
 	 * Call this method when it's the agents turn to make his move.
-	 * @param board Current state of the gameboard.
 	 */
 	public abstract void takeTurn();
+
+	/**
+	 * Call when it's the agents turn to finish his move.
+	 * Can be overridden for special needs.
+	 */
+	public void finishTurn() {
+		Menu.clear(); // clear the menu
+		GameState.finishTurn();
+	}
 	
 	/**
 	 * The image to paint for this character.

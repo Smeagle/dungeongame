@@ -22,6 +22,8 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	private static double pressX = 0;
 	private static double pressY = 0;
 	
+	private static boolean pressOnMenu = false;
+	
 	public static BoardMouseListener getInstance() {
 		if (instance == null) {
 			instance = new BoardMouseListener();
@@ -35,12 +37,23 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	public void mouseMoved(MouseEvent e) {
 		BoardPanel.mouseX = e.getX();
 		BoardPanel.mouseY = e.getY();
-		BoardPanel.updateMouseoverCoordinates(); // maybe optimize later (move into thread)
+		
+		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
+			GameState.setMouseoverCoordinates(null);
+		}
+		else {
+			BoardPanel.updateMouseoverCoordinates(); // maybe optimize later (move into thread)
+		}
+		
 		BoardPanel.getInstance().repaint();
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		if (pressOnMenu) {
+			return;
+		}
+		
 		// bei einem Rechts-Drag das Bild verschieben
 		if ((e.getModifiersEx() & MouseEvent.getMaskForButton(MouseEvent.BUTTON3)) > 0) {
 			BoardPanel.translateX = oldTranslateX + e.getX() - pressX;
@@ -51,6 +64,13 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
+			pressOnMenu = true;
+			return;
+		}
+		
+		pressOnMenu = false;
+		
 		// bei einem Rechtsklick die Position merken, für das Draggen (Bild verschieben)
 		if ((e.getModifiersEx() & MouseEvent.getMaskForButton(MouseEvent.BUTTON3)) > 0) {
 			oldTranslateX = BoardPanel.translateX;
@@ -62,6 +82,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
+			return;
+		}
+		
 		// Das Mausrad verändert den Zoom
 		BoardPanel.scale -= e.getPreciseWheelRotation() * SCALE_STEP;
 		if (BoardPanel.scale > SCALE_MAX) {
@@ -87,6 +111,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
+			return;
+		}
+		
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			Coordinates c = GameState.getMouseoverCoordinates();
 			if (c != null) {

@@ -45,6 +45,10 @@ public class Gameboard {
 	public void addGuard(Coordinates spawn, LinkedList<Coordinates> route) {
 		gamePieces.add(new Guard(spawn, route, this));
 	}
+	
+	public void addAgent(Agent agent) {
+		gamePieces.add(agent);
+	}
 
 	/**
 	 * Reads the terrain for a field from the board. Requires field to be on the board.
