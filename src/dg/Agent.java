@@ -14,6 +14,7 @@ import dg.gui.GUIUtils;
 import dg.gui.ImageCache;
 import dg.gui.Menu;
 import dg.gui.Shapes;
+import dg.gui.animation.AnimationQueue;
 
 public abstract class Agent {
 	protected Gameboard board;
@@ -188,7 +189,7 @@ public abstract class Agent {
 	public void paintAgent(Graphics2D g2) {
 		Image image = ImageCache.getImage(this.getImage());
 		if (image != null) {
-			Point2D hexOffset = GUIUtils.getHexOffset(this.getPosition());
+			Point2D hexOffset = AnimationQueue.getHexOffset(this);
 			AffineTransform t = getAgentTransform(hexOffset);
 			g2.setTransform(t);
 			double r = Shapes.HEX_RADIUS;

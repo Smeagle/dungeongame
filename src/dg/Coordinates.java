@@ -67,7 +67,7 @@ public class Coordinates {
 	}
 	
 	public Coordinates getAdjacentInDirection(Direction dir) {
-		return new Coordinates(this.r + dir.dr, this.q + dir.dq);
+		return new Coordinates(this.q + dir.dq, this.r + dir.dr);
 	}
 
 	public static LinkedList<Coordinates> getCommonAdjacent(Coordinates a, Coordinates b) {

@@ -25,13 +25,13 @@ public enum Direction {
 			throw new IllegalArgumentException();
 		}
 
-		Direction result = TOPLEFT;
-
 		for (Direction dir : Direction.values()) {
-			if (dir.dq == to.q - from.q && dir.dr == to.r - from.r) {
-				result = dir;
+			if (from.getAdjacentInDirection(dir).equals(to)) {
+				return dir;
 			}
 		}
-		return result;
+		
+		return null;
 	}
+	
 }

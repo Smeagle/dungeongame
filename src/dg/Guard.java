@@ -13,6 +13,8 @@ import dg.gui.Colors;
 import dg.gui.GUIUtils;
 import dg.gui.ImageCache;
 import dg.gui.Shapes;
+import dg.gui.animation.AnimationQueue;
+import dg.gui.animation.MoveAnimation;
 
 public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
@@ -105,7 +107,13 @@ public class Guard extends Agent {
 		LinkedList<Coordinates> path = calculatePath(position, target);
 		
 		if (path.isEmpty() == false) {
-			position = path.pollFirst();
+			Coordinates oldPosition = position;
+			Coordinates newPosition = path.pollFirst();
+			
+			AnimationQueue.push(new MoveAnimation(this, oldPosition, newPosition));
+			
+			position = newPosition;
+			
 			if (nearestEnemy != null && position.equals(nearestEnemy.getPosition())) {
 				nearestEnemy.kill();
 			}
@@ -169,6 +177,8 @@ public class Guard extends Agent {
 		while (movesLeft > 0) {
 			makeMove();
 		}
+		
+		GameState.finishTurn();
 	}
 
 	/**

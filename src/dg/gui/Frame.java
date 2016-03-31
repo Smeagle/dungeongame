@@ -3,6 +3,9 @@ package dg.gui;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import dg.gui.animation.AnimationQueue;
+import dg.gui.animation.Repainter;
+
 public class Frame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -21,6 +24,8 @@ public class Frame extends JFrame {
 	 */
 	public static void init() throws Exception {
 		Menu.init();
+		AnimationQueue.init();
+		Repainter.init();
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
