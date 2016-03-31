@@ -16,7 +16,7 @@ import dg.gui.Shapes;
 
 public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
-	private Integer nextPatrolPoint;
+	private Integer nextPatrolPoint = 0;
 	private boolean isAlerted;
 	private Direction directionOfView = Direction.BOTTOMLEFT;
 	private Integer alertedBonus;
@@ -91,20 +91,30 @@ public class Guard extends Agent {
 	}
 
 	private void makeMove() {
-		if (position == patrolRoute.get(nextPatrolPoint)) {
+		if (position.equals(patrolRoute.get(nextPatrolPoint))) {
 			// Waypoint reached, start from beginning if at end
 			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
 		}
+		
 		Coordinates target = patrolRoute.get(nextPatrolPoint);
+		
 		if (nearestEnemy != null) {
 			target = nearestEnemy.getPosition();
 		}
+		
 		LinkedList<Coordinates> path = calculatePath(position, target);
-		position = path.pollFirst();
-		if (nearestEnemy.getPosition() == position) {
-			nearestEnemy.kill();
+		
+		if (path.isEmpty() == false) {
+			position = path.pollFirst();
+			if (nearestEnemy != null && position.equals(nearestEnemy.getPosition())) {
+				nearestEnemy.kill();
+			}
 		}
-		directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
+		
+		if (path.isEmpty() == false) {
+			directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
+		}
+		
 		movesLeft = movesLeft - 1;
 		nearestEnemy = checkFieldOfView();
 	}
