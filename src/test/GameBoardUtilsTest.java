@@ -64,7 +64,22 @@ public class GameBoardUtilsTest {
 		assertEquals(Terrain.FLOOR, board.getTerrain(bottomLeft));
 		assertEquals(Terrain.FLOOR, board.getTerrain(bottomRight));
 	}
-	
+
+	@Test
+	public void missingEndDelimiterTest() {
+		String boardString = "W";
+		board = GameBoardUtils.boardGenerator(boardString);
+		assertEquals("center was added, should be in bounds.", true, board.isInBounds(center));
+		assertEquals(Terrain.WALL, board.getTerrain(center));
+		
+		boardString = "F F $ F W W $ F F ";
+		board = GameBoardUtils.boardGenerator(boardString);
+		assertEquals("topLeft was added, should be in bounds.", true, board.isInBounds(topLeft));
+		assertEquals(Terrain.FLOOR, board.getTerrain(topLeft));
+		assertEquals("bottomRight was added, should be in bounds.", true, board.isInBounds(bottomRight));
+		assertEquals(Terrain.FLOOR, board.getTerrain(bottomRight));
+	}
+	@Test
 	public void emptyBoardTest() {
 		String boardString = "$";
 		exception.expect(IllegalArgumentException.class);
