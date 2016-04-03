@@ -2,6 +2,8 @@ package dg;
 
 import java.util.LinkedList;
 
+import dg.gui.ImageCache;
+
 public class Player extends Agent {
 	public static final Integer MOVES_PER_TURN_PLAYER = 3;// TODO magic number
 	private String identity;
@@ -45,5 +47,10 @@ public class Player extends Agent {
 
 	public String getIdentity() {
 		return identity;
+	}
+
+	@Override
+	public String getImage() {
+		return ImageCache.ROGUERIGO;
 	}
 }

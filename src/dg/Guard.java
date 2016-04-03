@@ -130,31 +130,38 @@ public class Guard extends Agent {
 		movesLeft = movesLeft - 1;
 		nearestEnemy = checkFieldOfView();
 	}
-
-	private boolean notices(Agent agent) {
-		boolean agentNoticed = false;
-		if (board.isVisible(position, agent.getPosition())) {
+	
+	private boolean notices(Coordinates from, Direction viewDirection, Coordinates targetPosition) {
+		if (board.isVisible(from, targetPosition)) {
 			if (isAlerted == true) {
 				// 360° view
-				agentNoticed = true;
+				return true;
 			} else {
 				// In 180° view, line of sight must include one of three fields in front of guard.
-				HashMap<Integer, HashSet<Coordinates>> fieldsOnLineOfSight = LOSUtilities.getFieldsOnRay(position,
-						agent.getPosition());
+				HashMap<Integer, HashSet<Coordinates>> fieldsOnLineOfSight = LOSUtilities.getFieldsOnRay(from,
+						targetPosition);
 				HashSet<Coordinates> rayFieldsAtDistOne = fieldsOnLineOfSight.get(1);
 
-				Coordinates fieldInFront = position.getAdjacentInDirection(directionOfView);
-				LinkedList<Coordinates> fieldsInFront = (Coordinates.getCommonAdjacent(position, fieldInFront));
+				if (rayFieldsAtDistOne == null) {
+					return false;
+				}
+				
+				Coordinates fieldInFront = from.getAdjacentInDirection(viewDirection);
+				LinkedList<Coordinates> fieldsInFront = (Coordinates.getCommonAdjacent(from, fieldInFront));
 				fieldsInFront.add(fieldInFront);
-
+				
 				for (Coordinates fif : fieldsInFront) {
 					if (rayFieldsAtDistOne.contains(fif)) {
-						agentNoticed = true;
+						return true;
 					}
 				}
 			}
 		}
-		return agentNoticed;
+		return false;
+	}
+	
+	private boolean notices(Agent agent) {
+		return notices(this.getPosition(), this.getDirectionOfView(), agent.getPosition());
 	}
 
 	/**
