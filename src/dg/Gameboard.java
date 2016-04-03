@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.TreeMap;
 
 /* This is a grid using axial coordinates with pointy topped hexagons. */
 /**
@@ -14,12 +13,14 @@ import java.util.TreeMap;
 public class Gameboard {
 
 	private Hashtable<Coordinates, Terrain> grid;
+	private LinkedList<Agent> gamePieces;
 
 	/**
 	 * Creates an empty gameboard.
 	 */
 	public Gameboard() {
 		this.grid = new Hashtable<Coordinates, Terrain>();
+		this.gamePieces = new LinkedList<Agent>();
 	}
 
 	/**
@@ -36,90 +37,17 @@ public class Gameboard {
 	}
 
 	/**
-	 * @param origin
-	 *            The field the path starts from.
-	 * @param target
-	 *            The field that wants to be reached.
-	 * @return List of Coordinates that need to be traveled to reach the target. Starts with neighbor of origin.
-	 * @throws IllegalArgumentException
-	 *             When either origin or target are out of bounds.
+	 * Adds a standard guard as seen in Spar Wars.
+	 * 
+	 * @param spawn
+	 * @param route
 	 */
-	public LinkedList<Coordinates> calculatePath(Coordinates origin, Coordinates target)
-			throws IllegalArgumentException {
-		if (isInBounds(origin) == false || isInBounds(target) == false) {
-			throw new IllegalArgumentException();
-		}
-
-		boolean success = false;
-		LinkedList<Coordinates> bestPath = new LinkedList<Coordinates>();
-		HashMap<Coordinates, Coordinates> previousField = new HashMap<Coordinates, Coordinates>();
-		HashMap<Coordinates, Integer> realCostToField = new HashMap<Coordinates, Integer>();
-		TreeMap<Integer, LinkedList<Coordinates>> pathCandidates = new TreeMap<Integer, LinkedList<Coordinates>>();
-
-		// Don't search if target is origin.
-		if (origin.equals(target)) {
-			success = true;
-		}
-
-		realCostToField.put(origin, 0);
-
-		// Initialize path candidates from origin
-		for (Coordinates cand : getMoveOptions(origin)) {
-			previousField.put(cand, origin);
-			realCostToField.put(cand, Coordinates.calculateDistance(origin, cand));
-			
-			Integer estimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
-			LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
-			candidateList.push(cand);
-			pathCandidates.put(estimatedCost, candidateList);
-		}
-
-		// A* search. Guarantees shortest path.
-		while (success == false && pathCandidates.isEmpty() == false) {
-			LinkedList<Coordinates> mostPromising = pathCandidates.get(pathCandidates.firstKey());
-			if (mostPromising.isEmpty()) {
-				pathCandidates.remove(pathCandidates.firstKey());
-			} else {
-				Coordinates current = mostPromising.pollFirst();
-				if (current.equals(target)) {
-					success = true;
-				} else {
-					for (Coordinates cand : getMoveOptions(current)) {
-						Integer newRealCost = realCostToField.get(current)
-								+ Coordinates.calculateDistance(current, cand);
-						if (realCostToField.containsKey(cand) == false || realCostToField.get(cand) > newRealCost) {
-							previousField.put(cand, current);
-							realCostToField.put(cand, newRealCost);
-							Integer newEstimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
-							if(pathCandidates.containsKey(newEstimatedCost)) {
-								pathCandidates.get(newEstimatedCost).push(cand);
-							} else {
-								LinkedList<Coordinates>	candidateList = new LinkedList<Coordinates>();
-								candidateList.push(cand);
-								pathCandidates.put(newEstimatedCost, candidateList);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Step through previous fields in reverse to get best path.
-		if (success == true && false == target.equals(origin)) {
-			boolean pathComplete = false;
-			Coordinates step = target;
-			while (pathComplete == false) {
-				bestPath.addFirst(step);
-				Coordinates prevStep = previousField.get(step);
-				if (prevStep == origin) {
-					pathComplete = true;
-				} else {
-					step = prevStep;
-				}
-			}
-		}
-
-		return bestPath;
+	public void addGuard(Coordinates spawn, LinkedList<Coordinates> route) {
+		gamePieces.add(new Guard(spawn, route, this));
+	}
+	
+	public void addAgent(Agent agent) {
+		gamePieces.add(agent);
 	}
 
 	/**
@@ -169,24 +97,6 @@ public class Gameboard {
 		return neighbors;
 	}
 
-	/**
-	 * Generates and returns the valid moves from the given Coordinates.
-	 * 
-	 * @param c
-	 *            Field for which move options are requested.
-	 * @return Coordinates of empty neighboring fields.
-	 */
-	public LinkedList<Coordinates> getMoveOptions(Coordinates c) {
-		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
-
-		for (Coordinates neighbor : getNeighbors(c)) {
-			if (getTerrain(neighbor) == Terrain.FLOOR) {
-				moveOptions.add(neighbor);
-			}
-		}
-
-		return moveOptions;
-	}
 
 	/**
 	 * Calculates whether target is visible from viewPoint.
@@ -251,8 +161,12 @@ public class Gameboard {
 
 		return visibleFields;
 	}
-	
+
 	public Hashtable<Coordinates, Terrain> getGrid() {
 		return grid;
+	}
+
+	public LinkedList<Agent> getAgents() {
+		return gamePieces;
 	}
 }

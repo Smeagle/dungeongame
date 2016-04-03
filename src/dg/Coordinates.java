@@ -6,24 +6,25 @@ import java.util.LinkedList;
  * @author murch Immutable Coordinate class.
  */
 public class Coordinates {
-	public final Integer r;
 	public final Integer q;
+	public final Integer r;
 
 	/* r rises from top to bottom, q rises from left to right, */
-	public Coordinates(Integer r, Integer q) {
+	public Coordinates(Integer q, Integer r) {
 		super();
-		this.r = r;
 		this.q = q;
+		this.r = r;
 	}
 
 	public Coordinates(Coordinates c, Direction dir) {
 		super();
-		this.r = c.r + dir.dr;
 		this.q = c.q + dir.dq;
+		this.r = c.r + dir.dr;
 	}
 
+	@Override
 	public String toString() {
-		return "(" + r + "," + q + ")";
+		return "(" + q + "," + r + ")";
 	}
 
 	/**
@@ -48,12 +49,12 @@ public class Coordinates {
 			return false;
 		}
 		Coordinates other = (Coordinates) c;
-		return (this.r == other.r && this.q == other.q);
+		return (this.q == other.q && this.r == other.r);
 	}
 
 	@Override
 	public int hashCode() {
-		String hashInput = "(" + this.r + "," + this.q + ")";
+		String hashInput = "(" + this.q + "," + this.r + ")";
 		return hashInput.hashCode();
 	}
 
@@ -64,6 +65,10 @@ public class Coordinates {
 			adjacentFields.add(adjacent);
 		}
 		return adjacentFields;
+	}
+	
+	public Coordinates getAdjacentInDirection(Direction dir) {
+		return new Coordinates(this.q + dir.dq, this.r + dir.dr);
 	}
 
 	public static LinkedList<Coordinates> getCommonAdjacent(Coordinates a, Coordinates b) {
