@@ -52,7 +52,7 @@ public class GUIUtils {
 			return 0;
 		}
 		
-		return i * d;
+		return (i + 1) * d;
 	}
 	
 	/**
@@ -68,10 +68,10 @@ public class GUIUtils {
 	public static Point2D getHexOffset(Coordinates c) {
 		double r = Shapes.HEX_RADIUS;
 		double h = GUIUtils.getTriangleHeight(r);
-		double dqx = 2 * h;
-		double dqy = 0;
-		double drx = h;
-		double dry = r + r / 2;
+		double dqx = r + r / 2;
+		double dqy = h;
+		double drx = 0;
+		double dry = 2 * h;
 		
 		double tx = c.r * drx + c.q * dqx;
 		double ty = c.r * dry + c.q * dqy;
@@ -105,6 +105,8 @@ public class GUIUtils {
 			wallString = wallString.substring(1) + wallString.charAt(0);
 		}
 
+		rotation++;
+		
 		rotationCache.put(coords, rotation);
 		return rotation;
 	}

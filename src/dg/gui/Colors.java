@@ -8,7 +8,7 @@ public class Colors {
 	
 	public static final Color HEX_MOUSEOVER = Color.white;
 	public static final Color HEX_SELECTION = Color.orange;
-	public static final Color AGENT_VIEW_DIRECTION_POINTER = new Color(1f, 1f, 1f, 0.5f);
+	public static final Color AGENT_VIEW_DIRECTION_POINTER = new Color(1f, 1f, 1f, 0.75f);
 	
 	public static final Color MENU_BACKGROUND = Color.gray;
 	public static final Color MENU_BUTTON_BACKGROUND = Color.darkGray;
