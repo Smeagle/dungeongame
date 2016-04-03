@@ -1,17 +1,33 @@
 package dg;
 
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import dg.action.DebugAgentAction;
+import dg.gui.BoardPanel;
+import dg.gui.Colors;
+import dg.gui.GUIUtils;
+import dg.gui.ImageCache;
+import dg.gui.Shapes;
+import dg.gui.animation.AnimationQueue;
+import dg.gui.animation.MoveAnimation;
+
 public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
-	private Integer nextPatrolPoint;
+	private Integer nextPatrolPoint = 0;
 	private boolean isAlerted;
 	private Direction directionOfView;
 	private Integer alertedBonus;
 	private Agent nearestEnemy;
 
+	public Guard() {
+		super(new Coordinates(0, 0), GameState.getBoard());
+	}
+	
 	public Guard(Coordinates spawnpoint, Gameboard board) {
 		super(spawnpoint,board);
 		this.position = spawnpoint;
@@ -81,7 +97,7 @@ public class Guard extends Agent {
 	}
 
 	private void makeMove() {
-		if (position == patrolRoute.get(nextPatrolPoint)) {
+		if (position.equals(patrolRoute.get(nextPatrolPoint))) {
 			// Waypoint reached, start from beginning if at end
 			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
 		}
@@ -90,11 +106,27 @@ public class Guard extends Agent {
 			target = nearestEnemy.getPosition();
 		}
 		LinkedList<Coordinates> path = calculatePath(position, target);
-		position = path.pollFirst();
-		if (nearestEnemy.getPosition() == position) {
-			nearestEnemy.kill();
+		
+		if (path.isEmpty() == false) {
+			Coordinates oldPosition = position;
+			Coordinates newPosition = path.pollFirst();
+			
+			Direction newDirectionOfView = Direction.getDirectionFromCoordinates(newPosition, oldPosition);
+			
+			AnimationQueue.push(new MoveAnimation(this, oldPosition, newPosition, newDirectionOfView));
+			
+			directionOfView = newDirectionOfView;
+			position = newPosition;
+			
+			if (nearestEnemy != null && position.equals(nearestEnemy.getPosition())) {
+				nearestEnemy.kill();
+			}
 		}
-		directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
+		
+//		if (path.isEmpty() == false) {
+//			directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
+//		}
+		
 		movesLeft = movesLeft - 1;
 		nearestEnemy = checkFieldOfView();
 	}
@@ -149,5 +181,110 @@ public class Guard extends Agent {
 		while (movesLeft > 0) {
 			makeMove();
 		}
+		
+		GameState.finishTurn();
 	}
+
+	/**
+	 * Generates and returns the valid moves from the given Coordinates.
+	 * 
+	 * @param c
+	 *            Field for which move options are requested.
+	 * @return Coordinates of empty neighboring fields.
+	 */
+	@Override
+	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
+		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
+
+		for (Coordinates neighbor : board.getNeighbors(c)) {
+			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
+				boolean isOccupiedByFriend = false;
+				for (Agent agent : board.getAgents()) {
+					if (agent.getPosition() == neighbor && agent.getAffiliation() == Affiliation.DUNGEON) {
+						isOccupiedByFriend = true;
+					}
+				}
+				if (false == isOccupiedByFriend) {
+					moveOptions.add(neighbor);
+				}
+			}
+		}
+
+		return moveOptions;
+	}
+
+	@Override
+	public String getImage() {
+		return ImageCache.GUARD;
+	}
+	
+	@Override
+	public void paintAgent(Graphics2D g2) {
+		// paint view direction
+		if (directionOfView != null) {
+			Point2D hexOffset = AnimationQueue.getHexOffset(this);
+			AffineTransform t = getDirectionTransform(hexOffset);
+			g2.setTransform(t);
+			g2.setColor(Colors.AGENT_VIEW_DIRECTION_POINTER);
+			g2.fill(Shapes.getShape(Shapes.VIEW_TRIANGLE));
+			g2.setTransform(new AffineTransform());
+		}
+		
+		super.paintAgent(g2);
+	}
+	
+	@Override
+	public void paintBeforeAgents(Graphics2D g2) {
+		if (this.equals(DebugAgentAction.getDebugAgent())) {
+			// field of view
+			Coordinates animationPosition = AnimationQueue.getPosition(this);
+			Direction animationViewDirection = AnimationQueue.getDirectionOfView(this);
+			for (Coordinates c : GameState.getBoard().getFieldOfView(AnimationQueue.getPosition(this))) {
+				if (GameState.getBoard().getTerrain(c) == Terrain.WALL) {
+					continue;
+				}
+				if (notices(animationPosition, animationViewDirection, c)) {
+					Point2D hexOffset = GUIUtils.getHexOffset(c);
+					AffineTransform t = BoardPanel.getHexTransform(c, hexOffset);
+					g2.setTransform(t);
+					g2.setColor(Colors.DEBUG_FIELD_OF_VIEW);
+					g2.fill(Shapes.getShape(Shapes.HEX));
+					g2.setTransform(new AffineTransform());
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void paintAfterAgents(Graphics2D g2) {
+		if (this.equals(DebugAgentAction.getDebugAgent())) {
+			// paint way points
+			for (Coordinates p : patrolRoute) {
+				Point2D hexOffset = GUIUtils.getHexOffset(p);
+				AffineTransform t = getWayPointTransform(hexOffset);
+				g2.setTransform(t);
+				g2.setColor(Colors.DEBUG_GUARD_WAYPOINT);
+				g2.fillOval(-10, -10, 20, 20);
+				g2.setTransform(new AffineTransform());
+			}
+		}
+	}
+	
+	private AffineTransform getWayPointTransform(Point2D hexOffset) {
+		AffineTransform transform = new AffineTransform();
+		transform.translate(BoardPanel.translateX, BoardPanel.translateY);
+		transform.scale(BoardPanel.scale, BoardPanel.scale);
+		transform.translate(hexOffset.getX(), hexOffset.getY());
+		return transform;
+	}
+	
+	private AffineTransform getDirectionTransform(Point2D hexOffset) {
+		AffineTransform transform = new AffineTransform();
+		transform.translate(BoardPanel.translateX, BoardPanel.translateY);
+		transform.scale(BoardPanel.scale, BoardPanel.scale);
+		transform.translate(hexOffset.getX(), hexOffset.getY());
+		transform.rotate(GUIUtils.getDirectionRotation(AnimationQueue.getDirectionOfView(this)));
+		return transform;
+	}
+	
 }

@@ -1,10 +1,11 @@
 package dg.gui;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
+import dg.gui.animation.AnimationQueue;
+import dg.gui.animation.Repainter;
+import dg.gui.input.BoardKeyListener;
 
 public class Frame extends JFrame {
 
@@ -19,35 +20,11 @@ public class Frame extends JFrame {
 		return instance;
 	}
 	
-	/**
-	 * Beim Start des Spiel aufzurufen, um die GUI zu laden
-	 */
-	public static void init() throws Exception {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					getInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
 	private Frame() {
 		this.add(BoardPanel.getInstance());
 		this.setDefaultCloseOperation(Frame.EXIT_ON_CLOSE);
 		
-		// exit on escape key
-		this.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					System.exit(0);
-				}
-			}
-		});
+		this.addKeyListener(new BoardKeyListener());
 		
 		this.pack();
 		this.setSize(GUIUtils.getFullScreenBounds());
