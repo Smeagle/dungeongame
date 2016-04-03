@@ -1,12 +1,18 @@
-package dg.gui;
+package dg.gui.input;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import dg.GameException;
+import dg.action.Action;
+import dg.action.DebugAgentAction;
+import dg.action.DebugPathfindingAction;
+import dg.gui.BoardPanel;
+import dg.gui.Colors;
+import dg.gui.Fonts;
 
 public class Menu {
 
@@ -18,22 +24,25 @@ public class Menu {
 	private static final int BUTTON_HEIGHT = 50;
 	private static final int BUTTON_PADDING = 10;
 	
-	private static final int BUTTON_FONT_TYPE = Font.TRUETYPE_FONT;
-	private static final String BUTTON_FONT_FILE = "fonts/Amatic-Bold.ttf";
-	private static final float BUTTON_FONT_SIZE = 40;
-	
-	private static Font buttonFont = null;
-			
 	private static List<Action> actions = new ArrayList<Action>();
 	
-	public static void init() throws Exception {
-		buttonFont = Font.createFont(BUTTON_FONT_TYPE, new File(BUTTON_FONT_FILE)).deriveFont(BUTTON_FONT_SIZE);
+	private static List<Action> permanentActions = new ArrayList<Action>();
+	
+	public static void init() {
+		permanentActions.add(new DebugAgentAction());
+		permanentActions.add(new DebugPathfindingAction());
 	}
 	
 	public static void setActions(Action... actions) {
+		clear();
+		
+		for (Action a : permanentActions) {
+			Menu.actions.add(a);
+		}
 		for (Action a : actions) {
 			Menu.actions.add(a);
 		}
+		
 		BoardPanel.getInstance().repaint();
 	}
 
@@ -79,8 +88,17 @@ public class Menu {
 			int buttonNameY = buttonY + BUTTON_HEIGHT - BUTTON_PADDING;
 			
 			g2.setColor(Colors.MENU_BUTTON_LABEL);
-			g2.setFont(buttonFont);
+			g2.setFont(Fonts.getFont(Fonts.BUTTON));
 			g2.drawString(action.getName(), buttonNameX, buttonNameY);
+		}
+	}
+
+	public static void keyPressed(int keyCode) throws GameException {
+		for (Action a : actions) {
+			if (a.getKeyCode() != null && a.getKeyCode() == keyCode) {
+				a.execute();
+				break;
+			}
 		}
 	}
 

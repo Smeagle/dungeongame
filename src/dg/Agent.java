@@ -2,7 +2,6 @@ package dg;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.TreeMap;
 import dg.gui.BoardPanel;
 import dg.gui.GUIUtils;
 import dg.gui.ImageCache;
-import dg.gui.Menu;
 import dg.gui.Shapes;
 import dg.gui.animation.AnimationQueue;
 
@@ -23,6 +21,7 @@ public abstract class Agent {
 	protected Coordinates spawn;
 	protected Integer movesPerTurn;
 	protected Integer movesLeft;
+	protected Direction directionOfView = Direction.BOTTOMLEFT;
 
 	public Agent(Coordinates spawnpoint, Gameboard board) {
 		this.board = board;
@@ -57,7 +56,6 @@ public abstract class Agent {
 	 * Can be overridden for special needs.
 	 */
 	public void finishTurn() {
-		Menu.clear(); // clear the menu
 		GameState.finishTurn();
 	}
 	
@@ -65,12 +63,6 @@ public abstract class Agent {
 	 * The image to paint for this character.
 	 */
 	public abstract String getImage();
-	
-	/**
-	 * This method is called on key press if the agent is active.
-	 * @param e the key event
-	 */
-	public abstract void onKeyPressed(KeyEvent e);
 	
 	public Integer getDistance(Agent agent) {
 		return Coordinates.calculateDistance(position, agent.getPosition());
@@ -86,8 +78,8 @@ public abstract class Agent {
 	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
 		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
 
-		for (Coordinates neighbor : board.getNeighbors(c)) {
-			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
+		for (Coordinates neighbor : GameState.getBoard().getNeighbors(c)) {
+			if (GameState.getBoard().getTerrain(neighbor) == Terrain.FLOOR) {
 				moveOptions.add(neighbor);
 			}
 		}
@@ -106,7 +98,7 @@ public abstract class Agent {
 	 */
 	public LinkedList<Coordinates> calculatePath(Coordinates origin, Coordinates target)
 			throws IllegalArgumentException {
-		if (board.isInBounds(origin) == false || board.isInBounds(target) == false) {
+		if (GameState.getBoard().isInBounds(origin) == false || GameState.getBoard().isInBounds(target) == false) {
 			throw new IllegalArgumentException();
 		}
 
@@ -211,6 +203,10 @@ public abstract class Agent {
 		transform.scale(BoardPanel.scale, BoardPanel.scale);
 		transform.translate(hexOffset.getX(), hexOffset.getY());
 		return transform;
+	}
+
+	public Direction getDirectionOfView() {
+		return directionOfView;
 	}
 	
 }

@@ -6,11 +6,11 @@ import dg.Affiliation;
 import dg.Agent;
 import dg.Coordinates;
 import dg.Gameboard;
+import dg.action.Action;
 import dg.event.EventHandler;
-import dg.gui.Action;
 import dg.gui.ImageCache;
-import dg.gui.Menu;
 import dg.gui.animation.AnimationQueue;
+import dg.gui.input.Menu;
 
 /**
  * Eine spielerartige Figur, für Entwicklungszwecke.
@@ -33,29 +33,19 @@ public class Dummy extends Agent {
 			@Override
 			public void onEvent() {
 				// set menu buttons
-				Menu.setActions(new Action("Zug beenden") {
+				Menu.setActions(new Action("SPACE: Zug beenden", KeyEvent.VK_SPACE) {
+					@Override
 					public void execute() {
 						finishTurn();
-					}
-				},
-				new Action("Hello") {
-					public void execute() {
-						System.out.println("Hello World");
 					}
 				});
 			}
 		});
-		
-		
 	}
 
 	@Override
 	public String getImage() {
 		return ImageCache.DUMMY;
-	}
-
-	@Override
-	public void onKeyPressed(KeyEvent e) {
 	}
 
 }

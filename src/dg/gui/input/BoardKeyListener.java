@@ -1,9 +1,9 @@
-package dg.gui;
+package dg.gui.input;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import dg.GameState;
+import dg.GameException;
 
 public class BoardKeyListener implements KeyListener {
 
@@ -13,13 +13,14 @@ public class BoardKeyListener implements KeyListener {
 		case KeyEvent.VK_ESCAPE:
 			System.exit(0);
 			break;
-		case KeyEvent.VK_D:
-			GameState.setDebugMode(!GameState.isDebugMode());
-			BoardPanel.getInstance().repaint();
-			break;
 		}
 		
-		GameState.getActiveAgent().onKeyPressed(e);
+		try {
+			Menu.keyPressed(e.getKeyCode());
+		} catch (GameException ex) {
+			// TODO show nice message dialog
+			ex.printStackTrace();
+		}
 	}
 
 	@Override

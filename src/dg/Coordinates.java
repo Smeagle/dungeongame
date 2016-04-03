@@ -22,6 +22,7 @@ public class Coordinates {
 		this.r = c.r + dir.dr;
 	}
 
+	@Override
 	public String toString() {
 		return "(" + q + "," + r + ")";
 	}

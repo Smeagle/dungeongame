@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dg.Coordinates;
+import dg.Direction;
 import dg.GameState;
 import dg.Gameboard;
 import dg.Terrain;
@@ -21,6 +22,37 @@ public class GUIUtils {
 		int screenWidth = (int) screenSize.getWidth();
 		int screenHeight = (int) screenSize.getHeight();
 		return new Dimension(screenWidth, screenHeight);
+	}
+	
+	public static double getDirectionRotation(Direction dir) {
+		double d = 2 * Math.PI / 12;
+		
+		int i = 0;
+		
+		switch (dir) {
+		case BOTTOMLEFT:
+			i = 7;
+			break;
+		case BOTTOMRIGHT:
+			i = 5;
+			break;
+		case LEFT:
+			i = 9;
+			break;
+		case RIGHT:
+			i = 3;
+			break;
+		case TOPLEFT:
+			i = 11;
+			break;
+		case TOPRIGHT:
+			i = 1;
+			break;
+		default:
+			return 0;
+		}
+		
+		return i * d;
 	}
 	
 	/**

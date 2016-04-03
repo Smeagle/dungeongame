@@ -13,13 +13,20 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import dg.Agent;
 import dg.Coordinates;
 import dg.GameState;
+import dg.Guard;
 import dg.Terrain;
+import dg.action.DebugPathfindingAction;
+import dg.gui.input.BoardMouseListener;
+import dg.gui.input.Menu;
+import dg.gui.input.MenuMouseListener;
+import dg.gui.input.Selection;
 
 public class BoardPanel extends JPanel {
 
@@ -28,10 +35,10 @@ public class BoardPanel extends JPanel {
 	private static final boolean DRAW_TEXTS = false;
 	private static final boolean DRAW_MOUSE = false;
 	
-	private static final boolean DRAW_MOUSEOVER = true;
-	
 	private static final Stroke MOUSEOVER_STROKE = new BasicStroke(1);
-	private static final Stroke SELECTION_STROKE = new BasicStroke(3);
+//	private static final Stroke SELECTION_STROKE = new BasicStroke(3);
+	private static final Stroke GRID_STROKE = new BasicStroke(0.3f);
+	private static final Stroke DEBUG_PATHFINDING_STROKE = new BasicStroke(3);
 	
 	private static BoardPanel instance = null;
 	
@@ -98,7 +105,8 @@ public class BoardPanel extends JPanel {
 			}
 
 			// grid
-			g2.setColor(Color.black);
+			g2.setColor(Colors.GRID);
+			g2.setStroke(GRID_STROKE);
 			g2.draw(hexTransform.createTransformedShape(hex));
 			
 			if (DRAW_TEXTS) {
@@ -115,7 +123,7 @@ public class BoardPanel extends JPanel {
 		}
 
 		// mouseover
-		if (DRAW_MOUSEOVER) {
+		if (Selection.isSelectionMode()) {
 			Coordinates c = GameState.getMouseoverCoordinates();
 			if (c != null) {
 				Point2D hexOffset = GUIUtils.getHexOffset(c);
@@ -127,13 +135,24 @@ public class BoardPanel extends JPanel {
 		}
 		
 		// selection
-		Coordinates c = GameState.getSelectionCoordinates();
-		if (c != null) {
-			Point2D hexOffset = GUIUtils.getHexOffset(c);
-			AffineTransform hexTransform = getHexTransform(c, hexOffset);
-			g2.setColor(Colors.HEX_SELECTION);
-			g2.setStroke(SELECTION_STROKE);
-			g2.draw(hexTransform.createTransformedShape(hex));
+//		Coordinates c = GameState.getSelectionCoordinates();
+//		if (c != null) {
+//			Point2D hexOffset = GUIUtils.getHexOffset(c);
+//			AffineTransform hexTransform = getHexTransform(c, hexOffset);
+//			g2.setColor(Colors.HEX_SELECTION);
+//			g2.setStroke(SELECTION_STROKE);
+//			g2.draw(hexTransform.createTransformedShape(hex));
+//		}
+		
+		// Wegfindung debuggen
+		if (DebugPathfindingAction.isActive()) {
+			for (Coordinates c : DebugPathfindingAction.getPath()) {
+				Point2D hexOffset = GUIUtils.getHexOffset(c);
+				AffineTransform hexTransform = getHexTransform(c, hexOffset);
+				g2.setColor(Colors.DEBUG_PATHFINDING_COLOR);
+				g2.setStroke(DEBUG_PATHFINDING_STROKE);
+				g2.draw(hexTransform.createTransformedShape(hex));
+			}
 		}
 		
 		// agents
@@ -149,7 +168,13 @@ public class BoardPanel extends JPanel {
 		
 		// menu
 		Menu.paintMenu(g2);
-				
+		
+		// selection help text
+		if (Selection.isSelectionMode() && Selection.getHelpText() != null) {
+			g2.setFont(Fonts.getFont(Fonts.SELECTION_HELP));
+			g2.drawString(Selection.getHelpText(), 10, 40);
+		}
+		
 		// mouse
 		if (DRAW_MOUSE) {
 			g2.setColor(Color.white);
@@ -158,7 +183,7 @@ public class BoardPanel extends JPanel {
 		}
 	};
 	
-	static void updateMouseoverCoordinates() {
+	public static void updateMouseoverCoordinates() {
 		Shape hex = Shapes.getShape(Shapes.HEX);
 		Hashtable<Coordinates, Terrain> grid = GameState.getBoard().getGrid();
 		for (Coordinates c : grid.keySet()) {
@@ -185,7 +210,7 @@ public class BoardPanel extends JPanel {
 		return hexTransform;
 	}
 	
-	private AffineTransform getHexTextTransform(Point2D hexOffset) {
+	private static AffineTransform getHexTextTransform(Point2D hexOffset) {
 		AffineTransform textTransform = new AffineTransform();
 		textTransform.translate(translateX, translateY);
 		textTransform.scale(scale, scale);

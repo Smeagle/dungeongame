@@ -1,4 +1,4 @@
-package dg.gui;
+package dg.gui.input;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -6,6 +6,8 @@ import java.awt.event.MouseMotionListener;
 import java.util.List;
 
 import dg.GameException;
+import dg.action.Action;
+import dg.gui.BoardPanel;
 
 public class MenuMouseListener implements MouseMotionListener, MouseListener {
 

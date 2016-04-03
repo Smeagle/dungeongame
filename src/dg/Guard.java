@@ -1,13 +1,13 @@
 package dg;
 
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import dg.action.DebugAgentAction;
 import dg.gui.BoardPanel;
 import dg.gui.Colors;
 import dg.gui.GUIUtils;
@@ -20,10 +20,13 @@ public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
 	private Integer nextPatrolPoint = 0;
 	private boolean isAlerted;
-	private Direction directionOfView = Direction.BOTTOMLEFT;
 	private Integer alertedBonus;
 	private Agent nearestEnemy;
 
+	public Guard() {
+		super(new Coordinates(0, 0), GameState.getBoard());
+	}
+	
 	public Guard(Coordinates spawnpoint, Gameboard board) {
 		super(spawnpoint,board);
 		this.position = spawnpoint;
@@ -110,8 +113,11 @@ public class Guard extends Agent {
 			Coordinates oldPosition = position;
 			Coordinates newPosition = path.pollFirst();
 			
-			AnimationQueue.push(new MoveAnimation(this, oldPosition, newPosition));
+			Direction newDirectionOfView = Direction.getDirectionFromCoordinates(newPosition, oldPosition);
 			
+			AnimationQueue.push(new MoveAnimation(this, oldPosition, newPosition, newDirectionOfView));
+			
+			directionOfView = newDirectionOfView;
 			position = newPosition;
 			
 			if (nearestEnemy != null && position.equals(nearestEnemy.getPosition())) {
@@ -119,38 +125,45 @@ public class Guard extends Agent {
 			}
 		}
 		
-		if (path.isEmpty() == false) {
-			directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
-		}
+//		if (path.isEmpty() == false) {
+//			directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
+//		}
 		
 		movesLeft = movesLeft - 1;
 		nearestEnemy = checkFieldOfView();
 	}
 
-	private boolean notices(Agent agent) {
-		boolean agentNoticed = false;
-		if (board.isVisible(position, agent.getPosition())) {
+	private boolean notices(Coordinates from, Direction viewDirection, Coordinates targetPosition) {
+		if (board.isVisible(from, targetPosition)) {
 			if (isAlerted == true) {
 				// 360° view
-				agentNoticed = true;
+				return true;
 			} else {
 				// In 180° view, line of sight must include one of three fields in front of guard.
-				HashMap<Integer, HashSet<Coordinates>> fieldsOnLineOfSight = LOSUtilities.getFieldsOnRay(position,
-						agent.getPosition());
+				HashMap<Integer, HashSet<Coordinates>> fieldsOnLineOfSight = LOSUtilities.getFieldsOnRay(from,
+						targetPosition);
 				HashSet<Coordinates> rayFieldsAtDistOne = fieldsOnLineOfSight.get(1);
 
-				Coordinates fieldInFront = position.getAdjacentInDirection(directionOfView);
-				LinkedList<Coordinates> fieldsInFront = (Coordinates.getCommonAdjacent(position, fieldInFront));
+				if (rayFieldsAtDistOne == null) {
+					return false;
+				}
+				
+				Coordinates fieldInFront = from.getAdjacentInDirection(viewDirection);
+				LinkedList<Coordinates> fieldsInFront = (Coordinates.getCommonAdjacent(from, fieldInFront));
 				fieldsInFront.add(fieldInFront);
-
+				
 				for (Coordinates fif : fieldsInFront) {
 					if (rayFieldsAtDistOne.contains(fif)) {
-						agentNoticed = true;
+						return true;
 					}
 				}
 			}
 		}
-		return agentNoticed;
+		return false;
+	}
+	
+	private boolean notices(Agent agent) {
+		return notices(this.getPosition(), this.getDirectionOfView(), agent.getPosition());
 	}
 
 	/**
@@ -210,11 +223,6 @@ public class Guard extends Agent {
 	}
 
 	@Override
-	public void onKeyPressed(KeyEvent e) {
-		// do nothing, this is a computer agent
-	}
-
-	@Override
 	public String getImage() {
 		return ImageCache.GUARD;
 	}
@@ -223,7 +231,7 @@ public class Guard extends Agent {
 	public void paintAgent(Graphics2D g2) {
 		// paint view direction
 		if (directionOfView != null) {
-			Point2D hexOffset = GUIUtils.getHexOffset(this.getPosition());
+			Point2D hexOffset = AnimationQueue.getHexOffset(this);
 			AffineTransform t = getDirectionTransform(hexOffset);
 			g2.setTransform(t);
 			g2.setColor(Colors.AGENT_VIEW_DIRECTION_POINTER);
@@ -236,10 +244,15 @@ public class Guard extends Agent {
 	
 	@Override
 	public void paintBeforeAgents(Graphics2D g2) {
-		if (GameState.isDebugMode()) {
-			if (position.equals(GameState.getSelectionCoordinates())) {
-				// field of view
-				for (Coordinates c : GameState.getBoard().getFieldOfView(position)) {
+		if (this.equals(DebugAgentAction.getDebugAgent())) {
+			// field of view
+			Coordinates animationPosition = AnimationQueue.getPosition(this);
+			Direction animationViewDirection = AnimationQueue.getDirectionOfView(this);
+			for (Coordinates c : GameState.getBoard().getFieldOfView(AnimationQueue.getPosition(this))) {
+				if (GameState.getBoard().getTerrain(c) == Terrain.WALL) {
+					continue;
+				}
+				if (notices(animationPosition, animationViewDirection, c)) {
 					Point2D hexOffset = GUIUtils.getHexOffset(c);
 					AffineTransform t = BoardPanel.getHexTransform(c, hexOffset);
 					g2.setTransform(t);
@@ -253,17 +266,15 @@ public class Guard extends Agent {
 	
 	@Override
 	public void paintAfterAgents(Graphics2D g2) {
-		if (GameState.isDebugMode()) {
-			if (position.equals(GameState.getSelectionCoordinates())) {
-				// paint way points
-				for (Coordinates p : patrolRoute) {
-					Point2D hexOffset = GUIUtils.getHexOffset(p);
-					AffineTransform t = getWayPointTransform(hexOffset);
-					g2.setTransform(t);
-					g2.setColor(Colors.DEBUG_GUARD_WAYPOINT);
-					g2.fillOval(-10, -10, 20, 20);
-					g2.setTransform(new AffineTransform());
-				}
+		if (this.equals(DebugAgentAction.getDebugAgent())) {
+			// paint way points
+			for (Coordinates p : patrolRoute) {
+				Point2D hexOffset = GUIUtils.getHexOffset(p);
+				AffineTransform t = getWayPointTransform(hexOffset);
+				g2.setTransform(t);
+				g2.setColor(Colors.DEBUG_GUARD_WAYPOINT);
+				g2.fillOval(-10, -10, 20, 20);
+				g2.setTransform(new AffineTransform());
 			}
 		}
 	}
@@ -281,39 +292,8 @@ public class Guard extends Agent {
 		transform.translate(BoardPanel.translateX, BoardPanel.translateY);
 		transform.scale(BoardPanel.scale, BoardPanel.scale);
 		transform.translate(hexOffset.getX(), hexOffset.getY());
-		transform.rotate(getDirectionRotation());
+		transform.rotate(GUIUtils.getDirectionRotation(AnimationQueue.getDirectionOfView(this)));
 		return transform;
-	}
-	
-	private double getDirectionRotation() {
-		double d = 2 * Math.PI / 12;
-		
-		int i = 0;
-		
-		switch (directionOfView) {
-		case BOTTOMLEFT:
-			i = 7;
-			break;
-		case BOTTOMRIGHT:
-			i = 5;
-			break;
-		case LEFT:
-			i = 9;
-			break;
-		case RIGHT:
-			i = 3;
-			break;
-		case TOPLEFT:
-			i = 11;
-			break;
-		case TOPRIGHT:
-			i = 1;
-			break;
-		default:
-			return 0;
-		}
-		
-		return i * d;
 	}
 	
 }

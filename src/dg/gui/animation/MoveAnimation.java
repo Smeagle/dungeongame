@@ -8,18 +8,24 @@ public class MoveAnimation {
 	
 	private Agent agent;
 	private Coordinates start;
-	private Direction direction;
+	private Direction moveDirection; // move direction
+	private Direction directionOfView; // view direction
+	private Direction oldDirectionOfView;
 	
-	public MoveAnimation(Agent agent, Coordinates start, Direction direction) {
+	public MoveAnimation(Agent agent, Coordinates start, Direction moveDirection, Direction directionOfView) {
 		this.agent = agent;
 		this.start = start;
-		this.direction = direction;
+		this.moveDirection = moveDirection;
+		this.directionOfView = directionOfView;
+		this.oldDirectionOfView = agent.getDirectionOfView();
 	}
 	
-	public MoveAnimation(Agent agent, Coordinates start, Coordinates end) {
+	public MoveAnimation(Agent agent, Coordinates start, Coordinates end, Direction directionOfView) {
 		this.agent = agent;
 		this.start = start;
-		this.direction = Direction.getDirectionFromCoordinates(end, start);
+		this.moveDirection = Direction.getDirectionFromCoordinates(end, start);
+		this.directionOfView = directionOfView;
+		this.oldDirectionOfView = agent.getDirectionOfView();
 	}
 	
 	public Coordinates getStart() {
@@ -30,12 +36,21 @@ public class MoveAnimation {
 		return agent;
 	}
 
-	public Direction getDirection() {
-		return direction;
+	public Direction getDirectionOfView() {
+		return directionOfView;
 	}
 	
+	public Direction getOldDirectionOfView() {
+		return oldDirectionOfView;
+	}
+	
+	public Direction getMoveDirection() {
+		return moveDirection;
+	}
+	
+	@Override
 	public String toString() {
-		return agent + " from " + start + " towards " + direction;
+		return agent + " from " + start + " towards " + moveDirection + " looking at " + directionOfView;
 	}
 
 }

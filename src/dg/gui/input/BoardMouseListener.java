@@ -1,4 +1,4 @@
-package dg.gui;
+package dg.gui.input;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -8,6 +8,9 @@ import java.awt.event.MouseWheelListener;
 
 import dg.Coordinates;
 import dg.GameState;
+import dg.event.EventHandler;
+import dg.event.SelectionEventHandler;
+import dg.gui.BoardPanel;
 
 public class BoardMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
 
@@ -118,7 +121,15 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			Coordinates c = GameState.getMouseoverCoordinates();
 			if (c != null) {
-				GameState.setSelectionCoordinates(c);
+				if (Selection.isSelectionMode()) {
+					EventHandler handler = Selection.getEventHandler();
+					if (handler instanceof SelectionEventHandler) {
+						((SelectionEventHandler) handler).onEvent(c);
+					}
+					else {
+						handler.onEvent();
+					}
+				}
 			}
 			BoardPanel.getInstance().repaint();
 		}

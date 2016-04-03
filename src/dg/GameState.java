@@ -1,26 +1,17 @@
 package dg;
 
-import java.util.ArrayList;
-import java.util.List;
+import dg.gui.input.Menu;
 
 /**
  * Repräsentiert den aktuellen Spielzustand, enthält also das Brett, Figuren etc.
  */
 public class GameState {
 
-	private static boolean debugMode = false;
-	
 	private static Gameboard board;
 	
 	private static Agent activeAgent;
 	
-	private static Agent selectedAgent;
-	
 	private static Coordinates mouseoverCoordinates;
-	
-	private static Coordinates selectionCoordinates;
-	
-	private static List<Callback> selectionListeners = new ArrayList<Callback>();
 	
 	/**
 	 * Startet das Spiel. Das Brett und Figuren etc. müssen schon aufgestellt sein.
@@ -39,6 +30,8 @@ public class GameState {
 	 * z.B. die maximale Anzahl Schritte gegangen wurden.
 	 */
 	public static void finishTurn() {
+		Menu.clear();
+		
 		int i = board.getAgents().indexOf(activeAgent);
 		if (i >= board.getAgents().size() - 1) {
 			i = 0;
@@ -48,10 +41,6 @@ public class GameState {
 		}
 		activeAgent = board.getAgents().get(i);
 		activeAgent.takeTurn();
-	}
-	
-	public static void addSelectionListener(Callback callback) {
-		selectionListeners.add(callback);
 	}
 	
 	public static void setBoard(Gameboard board) {
@@ -74,44 +63,4 @@ public class GameState {
 		return mouseoverCoordinates;
 	}
 
-	public static Coordinates getSelectionCoordinates() {
-		return selectionCoordinates;
-	}
-	
-	public static Agent getSelectedAgent() {
-		return selectedAgent;
-	}
-
-	public static boolean isDebugMode() {
-		return debugMode;
-	}
-
-	public static void setDebugMode(boolean debugMode) {
-		GameState.debugMode = debugMode;
-	}
-
-	public static void setSelectionCoordinates(Coordinates selectionCoordinates) {
-		Coordinates oldValue = GameState.selectionCoordinates;
-		
-		GameState.selectionCoordinates = selectionCoordinates;
-		
-		// update selected agent
-		selectedAgent = null;
-		for (Agent a : board.getAgents()) {
-			if (a.getPosition().equals(selectionCoordinates)) {
-				selectedAgent = a;
-				break;
-			}
-		}
-		
-		// inform listeners
-		if (oldValue == null && selectionCoordinates != null || oldValue != null && selectionCoordinates == null
-				|| !oldValue.equals(selectionCoordinates)) {
-			for (Callback callback : selectionListeners) {
-				callback.execute();
-			}
-		}
-		
-	}
-	
 }
