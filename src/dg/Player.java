@@ -46,4 +46,10 @@ public class Player extends Agent {
 	public String getIdentity() {
 		return identity;
 	}
+
+	@Override
+	public String getImage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

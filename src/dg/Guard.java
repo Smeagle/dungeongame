@@ -25,8 +25,8 @@ public class Guard extends Agent {
 	private Agent nearestEnemy;
 
 	public Guard() {
-	System.out.println("Guard super constructor called");
 		super(new Coordinates(0, 0), GameState.getBoard());
+		System.out.println("Guard super constructor called");
 	}
 	
 	public Guard(Coordinates spawnpoint, Gameboard board) {
@@ -208,5 +208,11 @@ public class Guard extends Agent {
 		}
 
 		return moveOptions;
+	}
+
+	@Override
+	public String getImage() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
