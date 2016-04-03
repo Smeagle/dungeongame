@@ -74,7 +74,7 @@ public class Shapes {
 	}
 	
 	private static Point2D hexCorner(Point2D center, double size, int i) {
-	    double angle_deg = 60 * i + 30;
+	    double angle_deg = 60 * i;
 	    double angle_rad = Math.PI / 180 * angle_deg;
 	    return new Point2D.Double(center.getX() + size * Math.cos(angle_rad), center.getY() + size * Math.sin(angle_rad));
 	}

@@ -37,7 +37,7 @@ public class BoardPanel extends JPanel {
 	
 	private static final Stroke MOUSEOVER_STROKE = new BasicStroke(1);
 //	private static final Stroke SELECTION_STROKE = new BasicStroke(3);
-	private static final Stroke GRID_STROKE = new BasicStroke(0.3f);
+	private static final Stroke GRID_STROKE = new BasicStroke(1);
 	private static final Stroke DEBUG_PATHFINDING_STROKE = new BasicStroke(3);
 	
 	private static BoardPanel instance = null;
@@ -99,16 +99,11 @@ public class BoardPanel extends JPanel {
 				g2.setClip(hex);
 				double r = Shapes.HEX_RADIUS;
 				double h = GUIUtils.getTriangleHeight(Shapes.HEX_RADIUS);
-				g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
+				g2.drawImage(image, (int) -r - 1, (int) -h - 1, (int) (2 * r) + 2, (int) (2 * h) + 2, null);
 				g2.setTransform(new AffineTransform());
 				g2.setClip(null);
 			}
 
-			// grid
-			g2.setColor(Colors.GRID);
-			g2.setStroke(GRID_STROKE);
-			g2.draw(hexTransform.createTransformedShape(hex));
-			
 			if (DRAW_TEXTS) {
 				AffineTransform textTransform = getHexTextTransform(hexOffset);
 				g2.setTransform(textTransform);
@@ -122,6 +117,18 @@ public class BoardPanel extends JPanel {
 			}
 		}
 
+		for (Coordinates c : grid.keySet()) {
+			Point2D hexOffset = GUIUtils.getHexOffset(c);
+			AffineTransform hexTransform = getHexTransform(c, hexOffset);
+			
+			// grid
+			if (GameState.getBoard().getTerrain(c) == Terrain.WALL) {
+				g2.setColor(Colors.GRID);
+				g2.setStroke(GRID_STROKE);
+				g2.draw(hexTransform.createTransformedShape(hex));
+			}
+		}
+		
 		// mouseover
 		if (Selection.isSelectionMode()) {
 			Coordinates c = GameState.getMouseoverCoordinates();
@@ -206,7 +213,9 @@ public class BoardPanel extends JPanel {
 		hexTransform.translate(translateX, translateY);
 		hexTransform.scale(scale, scale);
 		hexTransform.translate(hexOffset.getX(), hexOffset.getY());
-		hexTransform.rotate(GUIUtils.getWallRotation(c) * (2 * Math.PI / 6));
+		if (GameState.getBoard().getTerrain(c) == Terrain.WALL) {
+			hexTransform.rotate((GUIUtils.getWallRotation(c)) * (2 * Math.PI / 6));
+		}
 		return hexTransform;
 	}
 	
