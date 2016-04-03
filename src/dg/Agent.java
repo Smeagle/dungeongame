@@ -82,7 +82,7 @@ public abstract class Agent {
 			if (board.getTerrain(neighbor) == Terrain.FLOOR || board.getTerrain(neighbor) == Terrain.EXIT) {
 				boolean isOccupiedByFriend = false;
 				for (Agent agent : board.getAgents()) {
-					if (agent.getPosition() == neighbor && agent.getAffiliation() == affiliation) {
+					if (agent.getPosition().equals(neighbor) && agent.getAffiliation().equals(affiliation)) {
 						isOccupiedByFriend = true;
 					}
 				}
