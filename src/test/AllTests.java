@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	GridTest.class,
 	CoordinatesTest.class,
 	LOSUtilitiesTest.class,
-	GuardTest.class
+	AgentTest.class,
+	GameBoardUtilsTest.class
 })
 
 public class AllTests {

@@ -20,6 +20,7 @@ public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
 	private Integer nextPatrolPoint = 0;
 	private boolean isAlerted;
+	private Direction directionOfView;
 	private Integer alertedBonus;
 	private Agent nearestEnemy;
 
@@ -100,13 +101,10 @@ public class Guard extends Agent {
 			// Waypoint reached, start from beginning if at end
 			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
 		}
-		
 		Coordinates target = patrolRoute.get(nextPatrolPoint);
-		
 		if (nearestEnemy != null) {
 			target = nearestEnemy.getPosition();
 		}
-		
 		LinkedList<Coordinates> path = calculatePath(position, target);
 		
 		if (path.isEmpty() == false) {
@@ -132,7 +130,7 @@ public class Guard extends Agent {
 		movesLeft = movesLeft - 1;
 		nearestEnemy = checkFieldOfView();
 	}
-
+	
 	private boolean notices(Coordinates from, Direction viewDirection, Coordinates targetPosition) {
 		if (board.isVisible(from, targetPosition)) {
 			if (isAlerted == true) {

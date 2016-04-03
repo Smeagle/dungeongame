@@ -48,6 +48,7 @@ public abstract class Agent {
 	
 	/**
 	 * Call this method when it's the agents turn to make his move.
+	 * @param board Current state of the gameboard.
 	 */
 	public abstract void takeTurn();
 
@@ -69,7 +70,7 @@ public abstract class Agent {
 	}
 
 	/**
-	 * Generates and returns the valid moves from the given Coordinates.
+	 * Generates and returns the valid moves from the given Coordinates. Can't move through friendly units.
 	 * 
 	 * @param c
 	 *            Field for which move options are requested.
@@ -78,9 +79,17 @@ public abstract class Agent {
 	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
 		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
 
-		for (Coordinates neighbor : GameState.getBoard().getNeighbors(c)) {
-			if (GameState.getBoard().getTerrain(neighbor) == Terrain.FLOOR) {
-				moveOptions.add(neighbor);
+		for (Coordinates neighbor : board.getNeighbors(c)) {
+			if (board.getTerrain(neighbor) == Terrain.FLOOR || board.getTerrain(neighbor) == Terrain.EXIT) {
+				boolean isOccupiedByFriend = false;
+				for (Agent agent : board.getAgents()) {
+					if (agent.getPosition() == neighbor && agent.getAffiliation() == affiliation) {
+						isOccupiedByFriend = true;
+					}
+				}
+				if (false == isOccupiedByFriend) {
+					moveOptions.add(neighbor);
+				}
 			}
 		}
 
@@ -98,7 +107,7 @@ public abstract class Agent {
 	 */
 	public LinkedList<Coordinates> calculatePath(Coordinates origin, Coordinates target)
 			throws IllegalArgumentException {
-		if (GameState.getBoard().isInBounds(origin) == false || GameState.getBoard().isInBounds(target) == false) {
+		if (board.isInBounds(origin) == false || board.isInBounds(target) == false) {
 			throw new IllegalArgumentException();
 		}
 
@@ -122,7 +131,7 @@ public abstract class Agent {
 
 			Integer estimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
 			LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
-			candidateList.push(cand);
+			candidateList.add(cand);
 			pathCandidates.put(estimatedCost, candidateList);
 		}
 
@@ -145,10 +154,10 @@ public abstract class Agent {
 							Integer newEstimatedCost = Coordinates.calculateDistance(cand, target)
 									+ realCostToField.get(cand);
 							if (pathCandidates.containsKey(newEstimatedCost)) {
-								pathCandidates.get(newEstimatedCost).push(cand);
+								pathCandidates.get(newEstimatedCost).add(cand);
 							} else {
 								LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
-								candidateList.push(cand);
+								candidateList.add(cand);
 								pathCandidates.put(newEstimatedCost, candidateList);
 							}
 						}

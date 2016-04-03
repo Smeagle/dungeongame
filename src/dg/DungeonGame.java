@@ -1,7 +1,9 @@
 package dg;
 
+import java.util.LinkedList;
 import javax.swing.SwingUtilities;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import dg.dev.DevUtilities;
 import dg.dev.Dummy;
 import dg.gui.Frame;
@@ -22,7 +24,7 @@ public class DungeonGame {
 		GameState.getBoard().addAgent(new Dummy(new Coordinates(1, 1), GameState.getBoard()));
 		DevUtilities.addDevGuards();
 		
-		// GUI starten f�r Anzeige des Bretts
+		// GUI starten fï¿½r Anzeige des Bretts
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -34,7 +36,7 @@ public class DungeonGame {
 					AnimationQueue.init();
 					Repainter.init();
 					
-					// Spielablauf an schmei�en
+					// Spielablauf an schmeißen
 					GameState.startGame();
 					
 				} catch (Exception e) {
@@ -42,5 +44,23 @@ public class DungeonGame {
 				}
 			}
 		});
+	}
+
+	public static void playerKilled() {
+		// TODO Auto-generated method stub
+
+		throw new NotImplementedException();
+	}
+
+	public static Direction getPlayerMove(LinkedList<Coordinates> moveOptions) {
+		// TODO Auto-generated method stub
+
+		throw new NotImplementedException();
+	}
+
+	public static void levelComplete() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
 	}
 }
