@@ -1,8 +1,18 @@
 package dg;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
+
+import dg.gui.BoardPanel;
+import dg.gui.GUIUtils;
+import dg.gui.ImageCache;
+import dg.gui.Shapes;
+import dg.gui.animation.AnimationQueue;
 
 public abstract class Agent {
 	protected Gameboard board;
@@ -11,12 +21,14 @@ public abstract class Agent {
 	protected Coordinates spawn;
 	protected Integer movesPerTurn;
 	protected Integer movesLeft;
+	protected Direction directionOfView = Direction.BOTTOMLEFT;
 
 	public Agent(Coordinates spawnpoint, Gameboard board) {
 		this.board = board;
 		this.spawn = spawnpoint;
+		this.position = spawnpoint;
 	}
-
+	
 	public Affiliation getAffiliation() {
 		return affiliation;
 	}
@@ -28,20 +40,30 @@ public abstract class Agent {
 	public Coordinates getSpawn() {
 		return spawn;
 	}
-
+	
 	/**
 	 * Call this method when agent is killed.
 	 */
 	public abstract void kill();
-
+	
 	/**
 	 * Call this method when it's the agents turn to make his move.
-	 * 
-	 * @param board
-	 *            Current state of the gameboard.
 	 */
 	public abstract void takeTurn();
 
+	/**
+	 * Call when it's the agents turn to finish his move.
+	 * Can be overridden for special needs.
+	 */
+	public void finishTurn() {
+		GameState.finishTurn();
+	}
+	
+	/**
+	 * The image to paint for this character.
+	 */
+	public abstract String getImage();
+	
 	public Integer getDistance(Agent agent) {
 		return Coordinates.calculateDistance(position, agent.getPosition());
 	}
@@ -160,5 +182,39 @@ public abstract class Agent {
 
 		return bestPath;
 	}
+	
+	/**
+	 * Called by paintComponent() of BoardPanel to paint the agent
+	 */
+	public void paintAgent(Graphics2D g2) {
+		Image image = ImageCache.getImage(this.getImage());
+		if (image != null) {
+			Point2D hexOffset = AnimationQueue.getHexOffset(this);
+			AffineTransform t = getAgentTransform(hexOffset);
+			g2.setTransform(t);
+			double r = Shapes.HEX_RADIUS;
+			double h = GUIUtils.getTriangleHeight(Shapes.HEX_RADIUS);
+			g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
+			g2.setTransform(new AffineTransform());
+		}
+	}
+	
+	public void paintBeforeAgents(Graphics2D g2) {
+	}
+	
+	public void paintAfterAgents(Graphics2D g2) {
+	}
 
+	private static AffineTransform getAgentTransform(Point2D hexOffset) {
+		AffineTransform transform = new AffineTransform();
+		transform.translate(BoardPanel.translateX, BoardPanel.translateY);
+		transform.scale(BoardPanel.scale, BoardPanel.scale);
+		transform.translate(hexOffset.getX(), hexOffset.getY());
+		return transform;
+	}
+
+	public Direction getDirectionOfView() {
+		return directionOfView;
+	}
+	
 }

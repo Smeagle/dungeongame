@@ -1,17 +1,34 @@
 package dg;
 
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import dg.action.DebugAgentAction;
+import dg.gui.BoardPanel;
+import dg.gui.Colors;
+import dg.gui.GUIUtils;
+import dg.gui.ImageCache;
+import dg.gui.Shapes;
+import dg.gui.animation.AnimationQueue;
+import dg.gui.animation.MoveAnimation;
+
 public class Guard extends Agent {
 	private LinkedList<Coordinates> patrolRoute;
-	private Integer nextPatrolPoint;
+	private Integer nextPatrolPoint = 0;
 	private boolean isAlerted;
 	private Direction directionOfView;
 	private Integer alertedBonus;
 	private Agent nearestEnemy;
 
+	public Guard() {
+	System.out.println("Guard super constructor called");
+		super(new Coordinates(0, 0), GameState.getBoard());
+	}
+	
 	public Guard(Coordinates spawnpoint, Gameboard board) {
 		super(spawnpoint,board);
 		this.position = spawnpoint;
@@ -81,7 +98,7 @@ public class Guard extends Agent {
 	}
 
 	private void makeMove() {
-		if (position == patrolRoute.get(nextPatrolPoint)) {
+		if (position.equals(patrolRoute.get(nextPatrolPoint))) {
 			// Waypoint reached, start from beginning if at end
 			nextPatrolPoint = (nextPatrolPoint + 1) % patrolRoute.size();
 		}
@@ -90,9 +107,21 @@ public class Guard extends Agent {
 			target = nearestEnemy.getPosition();
 		}
 		LinkedList<Coordinates> path = calculatePath(position, target);
-		position = path.pollFirst();
-		if (nearestEnemy.getPosition() == position) {
-			nearestEnemy.kill();
+		
+		if (path.isEmpty() == false) {
+			Coordinates oldPosition = position;
+			Coordinates newPosition = path.pollFirst();
+			
+			Direction newDirectionOfView = Direction.getDirectionFromCoordinates(newPosition, oldPosition);
+			
+			AnimationQueue.push(new MoveAnimation(this, oldPosition, newPosition, newDirectionOfView));
+			
+			directionOfView = newDirectionOfView;
+			position = newPosition;
+			
+			if (nearestEnemy != null && position.equals(nearestEnemy.getPosition())) {
+				nearestEnemy.kill();
+			}
 		}
 		directionOfView = Direction.getDirectionFromCoordinates(position, path.getFirst());
 		movesLeft = movesLeft - 1;
@@ -149,5 +178,35 @@ public class Guard extends Agent {
 		while (movesLeft > 0) {
 			makeMove();
 		}
+		
+		GameState.finishTurn();
+	}
+
+	/**
+	 * Generates and returns the valid moves from the given Coordinates.
+	 * 
+	 * @param c
+	 *            Field for which move options are requested.
+	 * @return Coordinates of empty neighboring fields.
+	 */
+	@Override
+	protected LinkedList<Coordinates> getMoveOptions(Coordinates c) {
+		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
+
+		for (Coordinates neighbor : board.getNeighbors(c)) {
+			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
+				boolean isOccupiedByFriend = false;
+				for (Agent agent : board.getAgents()) {
+					if (agent.getPosition() == neighbor && agent.getAffiliation() == Affiliation.DUNGEON) {
+						isOccupiedByFriend = true;
+					}
+				}
+				if (false == isOccupiedByFriend) {
+					moveOptions.add(neighbor);
+				}
+			}
+		}
+
+		return moveOptions;
 	}
 }
