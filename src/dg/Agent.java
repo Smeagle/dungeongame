@@ -101,7 +101,7 @@ public abstract class Agent {
 	 *            The field the path starts from.
 	 * @param target
 	 *            The field that wants to be reached.
-	 * @return List of Coordinates that need to be traveled to reach the target. Starts with neighbor of origin.
+	 * @return List of Coordinates that need to be traveled to reach the target. Starts with neighbor of origin. Returns empty list if target is origin or target is unreachable.
 	 * @throws IllegalArgumentException
 	 *             When either origin or target are out of bounds.
 	 */
@@ -121,19 +121,14 @@ public abstract class Agent {
 		if (origin.equals(target)) {
 			success = true;
 		}
-
+		
+		// Initialize path candidates with origin
 		realCostToField.put(origin, 0);
-
-		// Initialize path candidates from origin
-		for (Coordinates cand : getMoveOptions(origin)) {
-			previousField.put(cand, origin);
-			realCostToField.put(cand, Coordinates.calculateDistance(origin, cand));
-
-			Integer estimatedCost = Coordinates.calculateDistance(cand, target) + realCostToField.get(cand);
-			LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
-			candidateList.add(cand);
-			pathCandidates.put(estimatedCost, candidateList);
-		}
+		Integer estimatedCost = Coordinates.calculateDistance(origin, target);
+		
+		LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
+		candidateList.add(origin);
+		pathCandidates.put(estimatedCost, candidateList);
 
 		// A* search. Guarantees shortest path.
 		while (success == false && pathCandidates.isEmpty() == false) {
@@ -156,7 +151,7 @@ public abstract class Agent {
 							if (pathCandidates.containsKey(newEstimatedCost)) {
 								pathCandidates.get(newEstimatedCost).add(cand);
 							} else {
-								LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
+								candidateList = new LinkedList<Coordinates>();
 								candidateList.add(cand);
 								pathCandidates.put(newEstimatedCost, candidateList);
 							}
