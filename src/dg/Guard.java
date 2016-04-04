@@ -291,5 +291,10 @@ public class Guard extends Agent {
 		transform.rotate(GUIUtils.getDirectionRotation(AnimationQueue.getDirectionOfView(this)));
 		return transform;
 	}
+
+	@Override
+	public void endTurn() {
+		movesLeft = 0;		
+	}
 	
 }

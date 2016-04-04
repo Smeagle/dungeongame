@@ -41,24 +41,26 @@ public class Gameboard {
 	/**
 	 * Adds a player.
 	 * 
-	 * @param spawn Spawnpoint coordinates of player.
-	 * @param identity Identifier of the player.
+	 * @param spawn
+	 *            Spawnpoint coordinates of player.
+	 * @param identity
+	 *            Identifier of the player.
 	 */
 	public void addPlayer(Coordinates spawn, String identity) {
 		gamePieces.add(new Player(spawn, this, identity));
 	}
-	
 
 	/**
 	 * Removes player figure from game.
 	 * 
-	 * @param killedPlayer The figure that is being removed from the game.
+	 * @param killedPlayer
+	 *            The figure that is being removed from the game.
 	 */
 	public void playerKilled(Player killedPlayer) {
 		killedPlayers.add(killedPlayer);
 		gamePieces.remove(killedPlayer);
 	}
-	
+
 	public LinkedList<Agent> getKilledPlayers() {
 		return killedPlayers;
 	}
@@ -75,7 +77,7 @@ public class Gameboard {
 		gamePieces.add(guard);
 		return guard;
 	}
-	
+
 	public void addAgent(Agent agent) {
 		gamePieces.add(agent);
 	}
@@ -126,7 +128,6 @@ public class Gameboard {
 
 		return neighbors;
 	}
-
 
 	/**
 	 * Calculates whether target is visible from viewPoint.
@@ -198,5 +199,15 @@ public class Gameboard {
 
 	public LinkedList<Agent> getAgents() {
 		return gamePieces;
+	}
+
+	public LinkedList<Agent> getPlayers() {
+		LinkedList<Agent> players = new LinkedList<Agent>();
+		for (Agent agent : getAgents()) {
+			if (agent.getAffiliation().equals(Affiliation.PLAYER)) {
+				players.add(agent);
+			}
+		}
+		return players;
 	}
 }

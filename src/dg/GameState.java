@@ -1,5 +1,9 @@
 package dg;
 
+import java.util.LinkedList;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import dg.action.Action;
 import dg.gui.input.Menu;
 
 /**
@@ -78,6 +82,24 @@ public class GameState {
 
 	public static Coordinates getMouseoverCoordinates() {
 		return mouseoverCoordinates;
+	}
+
+	public static void playerKilled() {
+		// TODO Auto-generated method stub
+	
+		throw new NotImplementedException();
+	}
+
+	public static void levelComplete() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	
+	}
+
+	public static Action getPlayerAction(LinkedList<Action> actionOptions) {
+		// TODO Auto-generated method stub
+	
+		throw new NotImplementedException();
 	}
 
 }
