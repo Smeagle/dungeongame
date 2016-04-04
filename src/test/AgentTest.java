@@ -15,6 +15,7 @@ import dg.Direction;
 import dg.Gameboard;
 import dg.Guard;
 import dg.Terrain;
+import dg.GameBoardUtils;
 
 public class AgentTest {
 	Gameboard board;
@@ -106,17 +107,30 @@ public class AgentTest {
 		guard.calculatePath(viewPoint, outOfBounds);
 	}
 
-
 	@Test
 	public void walkAroundOtherGuardTest() {
-		fail("Not yet implemented");
+		board = GameBoardUtils.boardGenerator("F F $ F F F $ W W $");
+
+		Guard staticGuard = board.addGuard(center, new LinkedList<Coordinates>());
+		LinkedList<Coordinates> guardRoute = new LinkedList<Coordinates>();
+		guardRoute.add(right);
+		guardRoute.add(left);
+		Guard patrouillingGuard = board.addGuard(right, guardRoute);
+
+		assertEquals(staticGuard.getPosition(), center);
+		assertEquals(patrouillingGuard.getPosition(), right);
+		patrouillingGuard.takeTurn();
+		assertEquals(patrouillingGuard.getPosition(), topLeft);
+		patrouillingGuard.takeTurn();
+		assertEquals(patrouillingGuard.getPosition(), topLeft);
+		patrouillingGuard.takeTurn();
+		assertEquals(patrouillingGuard.getPosition(), right);
 	}
 
 	@Test
 	public void killPlayerTest() {
 		fail("Not yet implemented");
 	}
-
 
 	@Test
 	public void noticePlayerTest() {
@@ -127,5 +141,5 @@ public class AgentTest {
 	public void noticeAdditionalPlayerTest() {
 		fail("Not yet implemented");
 	}
-	
+
 }

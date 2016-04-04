@@ -205,7 +205,7 @@ public class Guard extends Agent {
 			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
 				boolean isOccupiedByFriend = false;
 				for (Agent agent : board.getAgents()) {
-					if (agent.getPosition() == neighbor && agent.getAffiliation() == Affiliation.DUNGEON) {
+					if (agent.getPosition().equals(neighbor) && agent.getAffiliation() == Affiliation.DUNGEON) {
 						isOccupiedByFriend = true;
 					}
 				}

@@ -39,10 +39,10 @@ public class Gameboard {
 	}
 
 	/**
-	 * Adds a standard guard as seen in Spar Wars.
+	 * Adds a player.
 	 * 
-	 * @param spawn
-	 * @param route
+	 * @param spawn Spawnpoint coordinates of player.
+	 * @param identity Identifier of the player.
 	 */
 	public void addPlayer(Coordinates spawn, String identity) {
 		gamePieces.add(new Player(spawn, this, identity));
@@ -50,10 +50,9 @@ public class Gameboard {
 	
 
 	/**
-	 * Adds a standard guard as seen in Spar Wars.
+	 * Removes player figure from game.
 	 * 
-	 * @param spawn
-	 * @param route
+	 * @param killedPlayer The figure that is being removed from the game.
 	 */
 	public void playerKilled(Player killedPlayer) {
 		killedPlayers.add(killedPlayer);
@@ -69,9 +68,12 @@ public class Gameboard {
 	 * 
 	 * @param spawn
 	 * @param route
+	 * @return The newly added guard.
 	 */
-	public void addGuard(Coordinates spawn, LinkedList<Coordinates> route) {
-		gamePieces.add(new Guard(spawn, route, this));
+	public Guard addGuard(Coordinates spawn, LinkedList<Coordinates> route) {
+		Guard guard = new Guard(spawn, route, this);
+		gamePieces.add(guard);
+		return guard;
 	}
 	
 	public void addAgent(Agent agent) {
