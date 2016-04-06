@@ -188,8 +188,6 @@ public class Guard extends Agent {
 		while (movesLeft > 0) {
 			makeMove();
 		}
-		
-		GameState.finishTurn();
 	}
 
 	/**

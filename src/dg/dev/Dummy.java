@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import dg.Affiliation;
 import dg.Agent;
 import dg.Coordinates;
+import dg.GameState;
 import dg.Gameboard;
 import dg.action.Action;
 import dg.event.EventHandler;
@@ -20,6 +21,7 @@ public class Dummy extends Agent {
 	public Dummy(Coordinates spawnpoint, Gameboard board) {
 		super(spawnpoint, board);
 		affiliation = Affiliation.DUNGEON;
+		computerControlled = false;
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class Dummy extends Agent {
 				Menu.setActions(new Action("SPACE: Zug beenden", KeyEvent.VK_SPACE) {
 					@Override
 					public void execute() {
-						finishTurn();
+						GameState.nextAgentsTurn();
 					}
 				});
 			}

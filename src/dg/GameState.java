@@ -17,30 +17,47 @@ public class GameState {
 	 * Startet das Spiel. Das Brett und Figuren etc. müssen schon aufgestellt sein.
 	 */
 	public static void startGame() {
-		if (board != null && board.getAgents().size() > 0) { 
-			activeAgent = board.getAgents().get(0);
-			activeAgent.takeTurn();
+		if (board != null && board.getAgents().size() > 0) {
+			// es fängt immer der Spieler an
+			for (Agent a : board.getAgents()) {
+				if (!a.isComputerControlled()) {
+					activeAgent = a;
+					activeAgent.takeTurn();
+					return;
+				}
+			}
+			
+			// falls es keinen Spieler-Agenten gibt...
+			nextAgentsTurn();
 		}
 	}
 	
 	/**
 	 * Der nächste Agent kommt an die Reihe.
-	 * Von Agenten aufzurufen, die "fertig" sind. KI-Agenten rufen selbstständig auf,
-	 * Spieler-Agenten per Knopfdruck oder automatisch wenn alle Aktionen aufgebraucht sind,
-	 * z.B. die maximale Anzahl Schritte gegangen wurden.
+	 * Von Spieler-Agenten aufzurufen, die "fertig" sind.
+	 * Nach einem Zug eines KI-Agenten kommt automatisch der nächste Agent an die Reihe.
 	 */
-	public static void finishTurn() {
+	public static void nextAgentsTurn() {
 		Menu.clear();
 		
-		int i = board.getAgents().indexOf(activeAgent);
-		if (i >= board.getAgents().size() - 1) {
-			i = 0;
+		int i = 0;
+		if (activeAgent != null) {
+			board.getAgents().indexOf(activeAgent);
 		}
-		else {
-			i++;
+		
+		while (true) {
+			if (i >= board.getAgents().size() - 1) {
+				i = 0;
+			}
+			else {
+				i++;
+			}
+			activeAgent = board.getAgents().get(i);
+			activeAgent.takeTurn();
+			if (!activeAgent.isComputerControlled()) {
+				break;
+			}
 		}
-		activeAgent = board.getAgents().get(i);
-		activeAgent.takeTurn();
 	}
 	
 	public static void setBoard(Gameboard board) {

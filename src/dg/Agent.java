@@ -18,6 +18,7 @@ public abstract class Agent {
 	protected Gameboard board;
 	protected Coordinates position;
 	protected Affiliation affiliation;
+	protected boolean computerControlled = true;
 	protected Coordinates spawn;
 	protected Integer movesPerTurn;
 	protected Integer movesLeft;
@@ -52,14 +53,6 @@ public abstract class Agent {
 	 */
 	public abstract void takeTurn();
 
-	/**
-	 * Call when it's the agents turn to finish his move.
-	 * Can be overridden for special needs.
-	 */
-	public void finishTurn() {
-		GameState.finishTurn();
-	}
-	
 	/**
 	 * The image to paint for this character.
 	 */
@@ -211,6 +204,10 @@ public abstract class Agent {
 
 	public Direction getDirectionOfView() {
 		return directionOfView;
+	}
+	
+	public boolean isComputerControlled() {
+		return computerControlled;
 	}
 	
 }

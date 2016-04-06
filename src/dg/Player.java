@@ -15,6 +15,7 @@ public class Player extends Agent {
 		this.movesPerTurn = MOVES_PER_TURN_PLAYER;
 		this.movesLeft = 0;
 		this.identity = identity;
+		this.computerControlled = false;
 	}
 
 	@Override
