@@ -10,6 +10,7 @@ import dg.GameException;
 import dg.action.Action;
 import dg.action.DebugAgentAction;
 import dg.action.DebugPathfindingAction;
+import dg.action.TestDialogAction;
 import dg.gui.BoardPanel;
 import dg.gui.Colors;
 import dg.gui.Fonts;
@@ -31,6 +32,7 @@ public class Menu {
 	public static void init() {
 		permanentActions.add(new DebugAgentAction());
 		permanentActions.add(new DebugPathfindingAction());
+		permanentActions.add(new TestDialogAction());
 	}
 	
 	public static void setActions(Action... actions) {

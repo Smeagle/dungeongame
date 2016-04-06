@@ -22,6 +22,7 @@ import dg.GameState;
 import dg.Terrain;
 import dg.action.DebugPathfindingAction;
 import dg.gui.input.BoardMouseListener;
+import dg.gui.input.Dialog;
 import dg.gui.input.Menu;
 import dg.gui.input.MenuMouseListener;
 import dg.gui.input.Selection;
@@ -62,12 +63,25 @@ public class BoardPanel extends JPanel {
 		translateX = fullscreenDim.getWidth() / 2;
 		translateY = fullscreenDim.getHeight() / 2;
 		
+		addBoardListeners();
+	}
+	
+	public void addBoardListeners() {
 		this.addMouseMotionListener(BoardMouseListener.getInstance());
 		this.addMouseListener(BoardMouseListener.getInstance());
 		this.addMouseWheelListener(BoardMouseListener.getInstance());
 		
 		this.addMouseMotionListener(MenuMouseListener.getInstance());
 		this.addMouseListener(MenuMouseListener.getInstance());
+	}
+	
+	public void removeBoardListeners() {
+		this.removeMouseMotionListener(BoardMouseListener.getInstance());
+		this.removeMouseListener(BoardMouseListener.getInstance());
+		this.removeMouseWheelListener(BoardMouseListener.getInstance());
+		
+		this.removeMouseMotionListener(MenuMouseListener.getInstance());
+		this.removeMouseListener(MenuMouseListener.getInstance());
 	}
 	
 	@Override
@@ -163,6 +177,9 @@ public class BoardPanel extends JPanel {
 			g2.setFont(Fonts.getFont(Fonts.SELECTION_HELP));
 			g2.drawString(Selection.getHelpText(), 10, 40);
 		}
+		
+		// dialog
+		Dialog.paintDialog(g2);
 		
 		// mouse
 		if (DRAW_MOUSE) {
