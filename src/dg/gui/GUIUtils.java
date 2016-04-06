@@ -2,6 +2,7 @@ package dg.gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,7 +16,11 @@ import dg.Terrain;
 
 public class GUIUtils {
 
+	public static final AffineTransform IDENTITY_TRANSFORM = new AffineTransform();
+	
 	private static Map<Coordinates, Integer> rotationCache = new HashMap<Coordinates, Integer>();
+	
+	private static Map<Coordinates, Point2D> hexOffsetCache = new HashMap<Coordinates, Point2D>();
 	
 	public static Dimension getFullScreenBounds() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -66,8 +71,12 @@ public class GUIUtils {
 	 * Ermittelt x und y des Mittelpunkts eines Hexfeldes.
 	 */
 	public static Point2D getHexOffset(Coordinates c) {
+		if (hexOffsetCache.containsKey(c)) {
+			return hexOffsetCache.get(c);
+		}
+		
 		double r = Shapes.HEX_RADIUS;
-		double h = GUIUtils.getTriangleHeight(r);
+		double h = Shapes.HEX_TRIANGLE_HEIGHT;
 		double dqx = r + r / 2;
 		double dqy = h;
 		double drx = 0;
@@ -76,7 +85,10 @@ public class GUIUtils {
 		double tx = c.r * drx + c.q * dqx;
 		double ty = c.r * dry + c.q * dqy;
 		
-		return new Point2D.Double(tx, ty);
+		Point2D p = new Point2D.Double(tx, ty);
+		hexOffsetCache.put(c, p);
+		
+		return p;
 	}
 	
 	//---------------------------------------------------------------------------------------

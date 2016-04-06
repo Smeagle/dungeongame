@@ -232,7 +232,7 @@ public class Guard extends Agent {
 			g2.setTransform(t);
 			g2.setColor(Colors.AGENT_VIEW_DIRECTION_POINTER);
 			g2.fill(Shapes.getShape(Shapes.VIEW_TRIANGLE));
-			g2.setTransform(new AffineTransform());
+			g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 		}
 		
 		super.paintAgent(g2);
@@ -254,7 +254,7 @@ public class Guard extends Agent {
 					g2.setTransform(t);
 					g2.setColor(Colors.DEBUG_FIELD_OF_VIEW);
 					g2.fill(Shapes.getShape(Shapes.HEX));
-					g2.setTransform(new AffineTransform());
+					g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 				}
 			}
 		}
@@ -270,7 +270,7 @@ public class Guard extends Agent {
 				g2.setTransform(t);
 				g2.setColor(Colors.DEBUG_GUARD_WAYPOINT);
 				g2.fillOval(-10, -10, 20, 20);
-				g2.setTransform(new AffineTransform());
+				g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 			}
 		}
 	}

@@ -13,14 +13,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.swing.JPanel;
 
 import dg.Agent;
 import dg.Coordinates;
 import dg.GameState;
-import dg.Guard;
 import dg.Terrain;
 import dg.action.DebugPathfindingAction;
 import dg.gui.input.BoardMouseListener;
@@ -36,7 +34,6 @@ public class BoardPanel extends JPanel {
 	private static final boolean DRAW_MOUSE = false;
 	
 	private static final Stroke MOUSEOVER_STROKE = new BasicStroke(1);
-//	private static final Stroke SELECTION_STROKE = new BasicStroke(3);
 	private static final Stroke GRID_STROKE = new BasicStroke(1);
 	private static final Stroke DEBUG_PATHFINDING_STROKE = new BasicStroke(3);
 	
@@ -48,6 +45,8 @@ public class BoardPanel extends JPanel {
 
 	public static int mouseX = 0;
 	public static int mouseY = 0;
+	
+	private static RenderingHints renderingHints = null;
 	
 	public static BoardPanel getInstance() {
 		if (instance == null) {
@@ -76,15 +75,8 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 
-		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		rh.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED));
-		rh.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR));
-	    g2.setRenderingHints(rh);
+		setRenderingHints(g2);
 	    
-	    AffineTransform viewportTransform = new AffineTransform();
-	    viewportTransform.translate(translateX, translateY);
-	    viewportTransform.scale(scale, scale);
-		
 		Shape hex = Shapes.getShape(Shapes.HEX);
 		
 		Hashtable<Coordinates, Terrain> grid = GameState.getBoard().getGrid();
@@ -98,9 +90,9 @@ public class BoardPanel extends JPanel {
 				g2.setTransform(hexTransform);
 				g2.setClip(hex);
 				double r = Shapes.HEX_RADIUS;
-				double h = GUIUtils.getTriangleHeight(Shapes.HEX_RADIUS);
+				double h = Shapes.HEX_TRIANGLE_HEIGHT;
 				g2.drawImage(image, (int) -r - 1, (int) -h - 1, (int) (2 * r) + 2, (int) (2 * h) + 2, null);
-				g2.setTransform(new AffineTransform());
+				g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 				g2.setClip(null);
 			}
 
@@ -110,10 +102,10 @@ public class BoardPanel extends JPanel {
 				
 				g2.setColor(Color.white);
 				String string = c.toString();
-				Rectangle2D stringRect = g2.getFontMetrics().getStringBounds(string, null);
+				Rectangle2D stringRect = g2.getFontMetrics().getStringBounds(string, null); // ok, it's only for debugging
 				g2.drawString(string, (int) (-stringRect.getWidth() / 2), (int) (stringRect.getHeight() / 2));
 				
-				g2.setTransform(new AffineTransform());
+				g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 			}
 		}
 
@@ -140,16 +132,6 @@ public class BoardPanel extends JPanel {
 				g2.draw(hexTransform.createTransformedShape(hex));
 			}
 		}
-		
-		// selection
-//		Coordinates c = GameState.getSelectionCoordinates();
-//		if (c != null) {
-//			Point2D hexOffset = GUIUtils.getHexOffset(c);
-//			AffineTransform hexTransform = getHexTransform(c, hexOffset);
-//			g2.setColor(Colors.HEX_SELECTION);
-//			g2.setStroke(SELECTION_STROKE);
-//			g2.draw(hexTransform.createTransformedShape(hex));
-//		}
 		
 		// Wegfindung debuggen
 		if (DebugPathfindingAction.isActive()) {
@@ -190,16 +172,33 @@ public class BoardPanel extends JPanel {
 		}
 	};
 	
+	private void setRenderingHints(Graphics2D g) {
+		if (renderingHints == null) {
+			renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR));
+		}
+		
+	    g.setRenderingHints(renderingHints);
+	}
+
 	public static void updateMouseoverCoordinates() {
+		Coordinates old = GameState.getMouseoverCoordinates();
+		Coordinates newCoordinates = null;
+		
 		Shape hex = Shapes.getShape(Shapes.HEX);
 		Hashtable<Coordinates, Terrain> grid = GameState.getBoard().getGrid();
 		for (Coordinates c : grid.keySet()) {
 			if (BoardPanel.getTransformedHex(c, hex).contains(BoardPanel.mouseX, BoardPanel.mouseY)) {
-				GameState.setMouseoverCoordinates(c);
-				return;
+				newCoordinates = c;
+				break;
 			}
 		}
-		GameState.setMouseoverCoordinates(null);
+		GameState.setMouseoverCoordinates(newCoordinates);
+		
+		if (old == null || !old.equals(newCoordinates)) {
+			BoardPanel.getInstance().repaint();
+		}
 	}
 	
 	private static Shape getTransformedHex(Coordinates c, Shape hex) {

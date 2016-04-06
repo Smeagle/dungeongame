@@ -182,9 +182,9 @@ public abstract class Agent {
 			AffineTransform t = getAgentTransform(hexOffset);
 			g2.setTransform(t);
 			double r = Shapes.HEX_RADIUS;
-			double h = GUIUtils.getTriangleHeight(Shapes.HEX_RADIUS);
+			double h = Shapes.HEX_TRIANGLE_HEIGHT;
 			g2.drawImage(image, (int) -h - 1, (int) -r - 1, (int) (2 * h) + 2, (int) (2 * r) + 2, null);
-			g2.setTransform(new AffineTransform());
+			g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 		}
 	}
 	

@@ -11,7 +11,10 @@ import java.util.Map;
 public class Shapes {
 
 	public static final double HEX_RADIUS = 50;
+	public static final double HEX_TRIANGLE_HEIGHT = GUIUtils.getTriangleHeight(HEX_RADIUS);
+	
 	private static final double VIEW_DIRECTION_TRIANGLE_SIZE = 20;
+	private static final double VIEW_DIRECTION_TRIANGLE_HEIGHT = GUIUtils.getTriangleHeight(VIEW_DIRECTION_TRIANGLE_SIZE);
 	
 	public static final int HEX = 0;
 	public static final int VIEW_TRIANGLE = 1;
@@ -36,10 +39,10 @@ public class Shapes {
 	
 	private static Shape getViewDirectionPolygon() {
 		// calculate points
-		double h = GUIUtils.getTriangleHeight(HEX_RADIUS);
+		double h = HEX_TRIANGLE_HEIGHT;
 		
 		double r2 = VIEW_DIRECTION_TRIANGLE_SIZE;
-		double h2 = GUIUtils.getTriangleHeight(r2);
+		double h2 = VIEW_DIRECTION_TRIANGLE_HEIGHT;
 		
 		List<Point2D> points = new ArrayList<Point2D>();
 		points.add(new Point2D.Double(-r2 / 2, -h + h2));

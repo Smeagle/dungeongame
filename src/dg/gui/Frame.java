@@ -1,10 +1,7 @@
 package dg.gui;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
-import dg.gui.animation.AnimationQueue;
-import dg.gui.animation.Repainter;
 import dg.gui.input.BoardKeyListener;
 
 public class Frame extends JFrame {

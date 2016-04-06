@@ -45,10 +45,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 			GameState.setMouseoverCoordinates(null);
 		}
 		else {
-			BoardPanel.updateMouseoverCoordinates(); // maybe optimize later (move into thread)
+			if (Selection.isSelectionMode()) {
+				BoardPanel.updateMouseoverCoordinates();
+			}
 		}
-		
-		BoardPanel.getInstance().repaint();
 	}
 	
 	@Override
