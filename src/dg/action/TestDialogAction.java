@@ -11,7 +11,12 @@ public class TestDialogAction extends Action {
 	
 	@Override
 	public void execute() throws GameException {
-		Dialog.open("Hallo, Welt\n\nbeliebige Taste zum fortfahren");
+		Dialog.open("Hallo, Welt", new Action("Schlieﬂen") {
+			@Override
+			public void execute() throws GameException {
+				Dialog.close();
+			}
+		});
 	}
 	
 }

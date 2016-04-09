@@ -3,6 +3,8 @@ package dg.gui.input;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import dg.GameException;
+
 public class DialogMouseListener implements MouseListener {
 
 	private static DialogMouseListener instance = null;
@@ -19,7 +21,18 @@ public class DialogMouseListener implements MouseListener {
 	
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		Dialog.close();
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			// button clicked?
+			if (Dialog.getButtonShape().contains(e.getX(), e.getY())) {
+				try {
+					Dialog.getAction().execute();
+				}
+				catch (GameException ex) {
+					//TODO show nice message dialog
+					ex.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	@Override

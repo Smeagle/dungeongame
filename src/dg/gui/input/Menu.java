@@ -90,7 +90,7 @@ public class Menu {
 			int buttonNameY = buttonY + BUTTON_HEIGHT - BUTTON_PADDING;
 			
 			g2.setColor(Colors.MENU_BUTTON_LABEL);
-			g2.setFont(Fonts.getFont(Fonts.BUTTON));
+			g2.setFont(Fonts.getFont(Fonts.MENU_BUTTON));
 			g2.drawString(action.getName(), buttonNameX, buttonNameY);
 		}
 	}

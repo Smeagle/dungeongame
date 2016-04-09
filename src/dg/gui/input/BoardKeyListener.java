@@ -10,7 +10,9 @@ public class BoardKeyListener implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (Dialog.isVisible()) {
-			Dialog.close();
+			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				Dialog.close();
+			}
 			return;
 		}
 		

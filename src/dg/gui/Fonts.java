@@ -7,8 +7,9 @@ import java.util.Map;
 
 public class Fonts {
 
-	public static final int BUTTON = 0;
-	public static final int SELECTION_HELP = 1;
+	public static final int MENU_BUTTON = 0;
+	public static final int DIALOG_BUTTON = 1;
+	public static final int SELECTION_HELP = 2;
 	
 	private static final int BUTTON_FONT_TYPE = Font.TRUETYPE_FONT;
 	private static final String BUTTON_FONT_FILE = "fonts/Amatic-Bold.ttf";
@@ -25,7 +26,8 @@ public class Fonts {
 			if (!cache.containsKey(fontKey)) {
 				Font font = null;
 				switch (fontKey) {
-				case BUTTON:
+				case MENU_BUTTON:
+				case DIALOG_BUTTON:
 					font = Font.createFont(BUTTON_FONT_TYPE, new File(BUTTON_FONT_FILE)).deriveFont(BUTTON_FONT_SIZE);
 					break;
 				case SELECTION_HELP:

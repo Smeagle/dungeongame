@@ -17,6 +17,8 @@ public class Colors {
 	public static final Color DIALOG_BACKGROUND = Color.gray;
 	public static final Color DIALOG_BLOCKER = new Color(0f, 0f, 0f, 0.5f);
 	public static final Color DIALOG_TEXT = Color.WHITE;
+	public static final Color DIALOG_BUTTON_BACKGROUND = Color.darkGray;
+	public static final Color DIALOG_BUTTON_TEXT = Color.WHITE;
 	
 	// debug
 	public static final Color DEBUG_FIELD_OF_VIEW = new Color(0.75f, 0.75f, 1f, 0.3f);

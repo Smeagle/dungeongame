@@ -1,8 +1,15 @@
 package dg.gui;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+
 import javax.swing.JFrame;
 
 import dg.gui.input.BoardKeyListener;
+import dg.gui.input.Dialog;
 
 public class Frame extends JFrame {
 
@@ -25,6 +32,13 @@ public class Frame extends JFrame {
 		
 		this.pack();
 		this.setSize(GUIUtils.getFullScreenBounds());
+		
+		this.addComponentListener(new ComponentAdapter() {
+		    public void componentResized(ComponentEvent e) {
+		        Dialog.resize();    
+		    }
+		});
+		
 		this.setVisible(true);
 	}
 	
