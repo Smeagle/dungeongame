@@ -29,7 +29,7 @@ public abstract class Agent {
 		this.spawn = spawnpoint;
 		this.position = spawnpoint;
 	}
-	
+
 	public Affiliation getAffiliation() {
 		return affiliation;
 	}
@@ -41,15 +41,17 @@ public abstract class Agent {
 	public Coordinates getSpawn() {
 		return spawn;
 	}
-	
+
 	/**
 	 * Call this method when agent is killed.
 	 */
 	public abstract void kill();
-	
+
 	/**
 	 * Call this method when it's the agents turn to make his move.
-	 * @param board Current state of the gameboard.
+	 * 
+	 * @param board
+	 *            Current state of the gameboard.
 	 */
 	public abstract void takeTurn();
 
@@ -57,7 +59,7 @@ public abstract class Agent {
 	 * The image to paint for this character.
 	 */
 	public abstract String getImage();
-	
+
 	public Integer getDistance(Agent agent) {
 		return Coordinates.calculateDistance(position, agent.getPosition());
 	}
@@ -94,7 +96,8 @@ public abstract class Agent {
 	 *            The field the path starts from.
 	 * @param target
 	 *            The field that wants to be reached.
-	 * @return List of Coordinates that need to be traveled to reach the target. Starts with neighbor of origin. Returns empty list if target is origin or target is unreachable.
+	 * @return List of Coordinates that need to be traveled to reach the target. Starts with neighbor of origin. Returns
+	 *         empty list if target is origin or target is unreachable.
 	 * @throws IllegalArgumentException
 	 *             When either origin or target are out of bounds.
 	 */
@@ -114,11 +117,11 @@ public abstract class Agent {
 		if (origin.equals(target)) {
 			success = true;
 		}
-		
+
 		// Initialize path candidates with origin
 		realCostToField.put(origin, 0);
 		Integer estimatedCost = Coordinates.calculateDistance(origin, target);
-		
+
 		LinkedList<Coordinates> candidateList = new LinkedList<Coordinates>();
 		candidateList.add(origin);
 		pathCandidates.put(estimatedCost, candidateList);
@@ -171,7 +174,7 @@ public abstract class Agent {
 
 		return bestPath;
 	}
-	
+
 	/**
 	 * Called by paintComponent() of BoardPanel to paint the agent
 	 */
@@ -187,10 +190,10 @@ public abstract class Agent {
 			g2.setTransform(GUIUtils.IDENTITY_TRANSFORM);
 		}
 	}
-	
+
 	public void paintBeforeAgents(Graphics2D g2) {
 	}
-	
+
 	public void paintAfterAgents(Graphics2D g2) {
 	}
 
@@ -205,9 +208,10 @@ public abstract class Agent {
 	public Direction getDirectionOfView() {
 		return directionOfView;
 	}
-	
+
 	public boolean isComputerControlled() {
 		return computerControlled;
+	}
 
 	public abstract void endTurn();
 
@@ -216,5 +220,14 @@ public abstract class Agent {
 			movesLeft = 0;
 		}
 	}
-	
+
+	public void addMoves(int i) {
+		movesLeft = movesLeft + i;
+	}
+
+	public void performMoveAction(Coordinates movementTarget) {
+		position = movementTarget;
+		movesLeft = movesLeft - 1;
+	}
+
 }
