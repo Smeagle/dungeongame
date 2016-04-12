@@ -208,6 +208,13 @@ public abstract class Agent {
 	
 	public boolean isComputerControlled() {
 		return computerControlled;
+
+	public abstract void endTurn();
+
+	public void endMovementInProgress() {
+		if (movesLeft.equals(movesPerTurn) == false) {
+			movesLeft = 0;
+		}
 	}
 	
 }

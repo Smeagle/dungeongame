@@ -1,9 +1,7 @@
 package dg;
 
-import java.util.LinkedList;
 import javax.swing.SwingUtilities;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import dg.dev.DevUtilities;
 import dg.dev.Dummy;
 import dg.gui.Frame;
@@ -36,31 +34,13 @@ public class DungeonGame {
 					AnimationQueue.init();
 					Repainter.init();
 					
-					// Spielablauf an schmeißen
-					GameState.startGame();
+					// Spielablauf anschmeißen
+					GameState.runGame();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-	}
-
-	public static void playerKilled() {
-		// TODO Auto-generated method stub
-
-		throw new NotImplementedException();
-	}
-
-	public static Direction getPlayerMove(LinkedList<Coordinates> moveOptions) {
-		// TODO Auto-generated method stub
-
-		throw new NotImplementedException();
-	}
-
-	public static void levelComplete() {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
-
 	}
 }

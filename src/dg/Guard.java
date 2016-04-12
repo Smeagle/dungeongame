@@ -205,7 +205,7 @@ public class Guard extends Agent {
 			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
 				boolean isOccupiedByFriend = false;
 				for (Agent agent : board.getAgents()) {
-					if (agent.getPosition() == neighbor && agent.getAffiliation() == Affiliation.DUNGEON) {
+					if (agent.getPosition().equals(neighbor) && agent.getAffiliation() == Affiliation.DUNGEON) {
 						isOccupiedByFriend = true;
 					}
 				}
@@ -290,6 +290,11 @@ public class Guard extends Agent {
 		transform.translate(hexOffset.getX(), hexOffset.getY());
 		transform.rotate(GUIUtils.getDirectionRotation(AnimationQueue.getDirectionOfView(this)));
 		return transform;
+	}
+
+	@Override
+	public void endTurn() {
+		movesLeft = 0;		
 	}
 	
 }

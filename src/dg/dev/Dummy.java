@@ -50,4 +50,9 @@ public class Dummy extends Agent {
 		return ImageCache.DUMMY;
 	}
 
+	@Override
+	public void endTurn() {
+		movesLeft = 0;
+	}
+
 }
