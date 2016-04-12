@@ -35,7 +35,7 @@ public class DungeonGame {
 					Repainter.init();
 					
 					// Spielablauf anschmeißen
-					GameState.runGame();
+					GameState.startGame();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
