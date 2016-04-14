@@ -57,13 +57,19 @@ public class BoardPanel extends JPanel {
 	}
 	
 	private BoardPanel() {
-		this.setBackground(Color.decode("#6F4E37")); // coffee brown!
+		this.setBackground(Colors.BOARD_PANEL_BACKGROUND); // coffee brown!
 		
 		Dimension fullscreenDim = GUIUtils.getFullScreenBounds();
 		translateX = fullscreenDim.getWidth() / 2;
 		translateY = fullscreenDim.getHeight() / 2;
 		
 		addBoardListeners();
+	}
+	
+	@Override
+	public void setSize(Dimension d) {
+		super.setSize(d);
+		Dialog.resize(); 
 	}
 	
 	public void addBoardListeners() {

@@ -35,6 +35,7 @@ public class ImageCache {
 	public static final String ROGUERIGO = "roguerigo.png";
 	public static final String GUARD = "guard.png";
 	public static final String DUMMY = "roguerigo.png";
+	public static final String TITLE_SCREEN = "title.png";
 	
 	private static Hashtable<String, Image> cache = new Hashtable<String, Image>();
 	

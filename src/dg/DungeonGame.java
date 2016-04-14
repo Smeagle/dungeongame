@@ -34,9 +34,6 @@ public class DungeonGame {
 					AnimationQueue.init();
 					Repainter.init();
 					
-					// Spielablauf anschmeißen
-					GameState.startGame();
-					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
