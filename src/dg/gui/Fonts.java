@@ -10,6 +10,7 @@ public class Fonts {
 	public static final int MENU_BUTTON = 0;
 	public static final int DIALOG_BUTTON = 1;
 	public static final int SELECTION_HELP = 2;
+	public static final int BUTTON_DEFAULT = 3;
 	
 	private static final int BUTTON_FONT_TYPE = Font.TRUETYPE_FONT;
 	private static final String BUTTON_FONT_FILE = "fonts/Amatic-Bold.ttf";
@@ -18,6 +19,7 @@ public class Fonts {
 	private static final int SELECTION_HELP_FONT_TYPE = Font.TRUETYPE_FONT;
 	private static final String SELECTION_HELP_FONT_FILE = "fonts/Amatic-Bold.ttf";
 	private static final float SELECTION_HELP_FONT_SIZE = 40;
+	
 	
 	private static Map<Integer, Font> cache = new HashMap<Integer, Font>();
 	
@@ -28,6 +30,7 @@ public class Fonts {
 				switch (fontKey) {
 				case MENU_BUTTON:
 				case DIALOG_BUTTON:
+				case BUTTON_DEFAULT:
 					font = Font.createFont(BUTTON_FONT_TYPE, new File(BUTTON_FONT_FILE)).deriveFont(BUTTON_FONT_SIZE);
 					break;
 				case SELECTION_HELP:

@@ -4,9 +4,9 @@ import dg.GameException;
 import dg.gui.Frame;
 import dg.gui.TitlePanel;
 
-public class EndGameAction extends Action {
+public class StopGameAction extends Action {
 
-	public EndGameAction() {
+	public StopGameAction() {
 		super("Spiel beenden");
 	}
 

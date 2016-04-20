@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -47,8 +46,6 @@ public class BoardPanel extends JPanel {
 	public static int mouseX = 0;
 	public static int mouseY = 0;
 	
-	private static RenderingHints renderingHints = null;
-	
 	public static BoardPanel getInstance() {
 		if (instance == null) {
 			instance = new BoardPanel();
@@ -70,6 +67,7 @@ public class BoardPanel extends JPanel {
 	public void setSize(Dimension d) {
 		super.setSize(d);
 		Dialog.resize(); 
+		Menu.resize(); 
 	}
 	
 	public void addBoardListeners() {
@@ -95,7 +93,7 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 
-		setRenderingHints(g2);
+		GUIUtils.setRenderingHints(g2);
 	    
 		Shape hex = Shapes.getShape(Shapes.HEX);
 		
@@ -195,16 +193,6 @@ public class BoardPanel extends JPanel {
 		}
 	};
 	
-	private void setRenderingHints(Graphics2D g) {
-		if (renderingHints == null) {
-			renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			renderingHints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-			renderingHints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR));
-		}
-		
-	    g.setRenderingHints(renderingHints);
-	}
-
 	public static void updateMouseoverCoordinates() {
 		Coordinates old = GameState.getMouseoverCoordinates();
 		Coordinates newCoordinates = null;

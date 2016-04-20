@@ -3,10 +3,8 @@ package dg.gui.input;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.List;
 
 import dg.GameException;
-import dg.action.Action;
 import dg.gui.BoardPanel;
 
 public class MenuMouseListener implements MouseMotionListener, MouseListener {
@@ -29,19 +27,16 @@ public class MenuMouseListener implements MouseMotionListener, MouseListener {
 		}
 		
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			// button clicked?
-			List<Action> actions = Menu.getActions();
-			for (int i = 0; i < actions.size(); i++) {
-				if (Menu.getButtonShape(i).contains(e.getX(), e.getY())) {
-					try {
-						actions.get(i).execute();
+			try {
+				for (Button b : Menu.getButtons()) {
+					if (b.click(e)) {
+						break;
 					}
-					catch (GameException ex) {
-						//TODO show nice message dialog
-						ex.printStackTrace();
-					}
-					break;
 				}
+			}
+			catch (GameException ex) {
+				// TODO show nice message
+				ex.printStackTrace();
 			}
 		}
 	}

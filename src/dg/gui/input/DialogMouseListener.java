@@ -22,15 +22,11 @@ public class DialogMouseListener implements MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			// button clicked?
-			if (Dialog.getButtonShape().contains(e.getX(), e.getY())) {
-				try {
-					Dialog.getAction().execute();
-				}
-				catch (GameException ex) {
-					//TODO show nice message dialog
-					ex.printStackTrace();
-				}
+			try {
+				Dialog.getButton().click(e);
+			} catch (GameException ex) {
+				// TODO show nice message
+				ex.printStackTrace();
 			}
 		}
 	}

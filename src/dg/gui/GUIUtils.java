@@ -1,6 +1,8 @@
 package dg.gui;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -21,6 +23,18 @@ public class GUIUtils {
 	private static Map<Coordinates, Integer> rotationCache = new HashMap<Coordinates, Integer>();
 	
 	private static Map<Coordinates, Point2D> hexOffsetCache = new HashMap<Coordinates, Point2D>();
+	
+	private static RenderingHints renderingHints = null;
+	
+	public static void setRenderingHints(Graphics2D g) {
+		if (renderingHints == null) {
+			renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR));
+		}
+		
+	    g.setRenderingHints(renderingHints);
+	}
 	
 	public static Dimension getFullScreenBounds() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
