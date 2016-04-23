@@ -11,12 +11,27 @@ public class TestDialogAction extends Action {
 	
 	@Override
 	public void execute() throws GameException {
-		Dialog.open("Hallo, Welt", new Action("Schlieﬂen") {
+		Action closeAction = new Action("Schlieﬂen") {
 			@Override
 			public void execute() throws GameException {
 				Dialog.close();
 			}
-		});
+		};
+		
+		Action okAction = new Action("OK") {
+			@Override
+			public void execute() throws GameException {
+				Dialog.close();
+				Dialog.open("Nochmal :D", new Action("Schlieﬂen") {
+					@Override
+					public void execute() throws GameException {
+						Dialog.close();
+					}
+				});
+			}
+		};
+		
+		Dialog.open("Hallo, Welt", closeAction, okAction);
 	}
 	
 }
