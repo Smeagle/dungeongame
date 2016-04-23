@@ -6,8 +6,8 @@ import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.List;
 
-import dg.GameException;
-import dg.action.Action;
+import com.sun.glass.events.KeyEvent;
+
 import dg.action.DebugAgentAction;
 import dg.action.DebugPathfindingAction;
 import dg.action.StopGameAction;
@@ -15,7 +15,7 @@ import dg.action.TestDialogAction;
 import dg.gui.BoardPanel;
 import dg.gui.Colors;
 
-public class Menu {
+public class Menu extends ButtonContainer {
 
 	public static final int MENU_WIDTH = 300;
 	
@@ -24,41 +24,34 @@ public class Menu {
 	private static final int BUTTON_Y_SPACING = 20; // between buttons
 	private static final int BUTTON_HEIGHT = 50;
 	
-	private static List<Button> buttons = new ArrayList<Button>();
+	private static Menu instance = new Menu();
 	
-	private static List<Action> permanentActions = new ArrayList<Action>();
+	private static List<Button> permanentButtons = new ArrayList<Button>();
 	
-	public static void init() {
-		permanentActions.add(new DebugAgentAction());
-		permanentActions.add(new DebugPathfindingAction());
-		permanentActions.add(new TestDialogAction());
-		permanentActions.add(new StopGameAction());
+	private Menu() {
 	}
 	
-	public static void setActions(Action... actions) {
-		clear();
-		
-		int i = 0;
-		for (Action a : permanentActions) {
-			Menu.buttons.add(new Button(a, getButtonShape(i++)));
-		}
-		for (Action a : actions) {
-			Menu.buttons.add(new Button(a, getButtonShape(i++)));
-		}
+	public static Menu getInstance() {
+		return instance;
+	}
+	
+	public static void init() {
+		permanentButtons.add(new Button("d: Agent debuggen", new DebugAgentAction(), KeyEvent.VK_D));
+		permanentButtons.add(new Button("w: Wegfindung debuggen", new DebugPathfindingAction(), KeyEvent.VK_W));
+		permanentButtons.add(new Button("Dialog testen", new TestDialogAction()));
+		permanentButtons.add(new Button("Spiel beenden", new StopGameAction()));
+	}
+	
+	public static void setButtons(Button... buttons) {
+		instance.clearButtons();
+		instance.addButtons(permanentButtons);
+		instance.addButtons(buttons);
 		
 		BoardPanel.getInstance().repaint();
 	}
 
-	public static void clear() {
-		buttons.clear();
-		BoardPanel.getInstance().repaint();
-	}
-	
-	static List<Button> getButtons() {
-		return buttons;
-	}
-	
-	static Shape getButtonShape(int index) {
+	@Override
+	protected Shape getButtonShape(int index) {
 		int panelWidth = BoardPanel.getInstance().getWidth();
 		int menuX = panelWidth - MENU_WIDTH;
 		int buttonX = menuX + BUTTON_X_SPACING;
@@ -78,26 +71,7 @@ public class Menu {
 		g2.setColor(Colors.MENU_BACKGROUND);
 		g2.fillRect(menuX, 0, MENU_WIDTH, panelHeight);
 		
-		for (Button b : buttons) {
-			b.paint(g2);
-		}
-	}
-
-	public static void keyPressed(int keyCode) throws GameException {
-		for (Button b : buttons) {
-			if (b.getAction().getKeyCode() != null && b.getAction().getKeyCode() == keyCode) {
-				b.getAction().execute();
-				break;
-			}
-		}
-	}
-	
-	public static void resize() {
-		if (buttons != null) {
-			for (int i = 0; i < buttons.size(); i++) {
-				buttons.get(i).setShape(getButtonShape(i));
-			}
-		}
+		instance.paintButtons(g2);
 	}
 
 }

@@ -1,7 +1,5 @@
 package dg.action;
 
-import java.awt.event.KeyEvent;
-
 import dg.Agent;
 import dg.Coordinates;
 import dg.GameException;
@@ -13,10 +11,6 @@ public class DebugAgentAction extends Action {
 
 	private static Agent debugAgent = null;
 	
-	public DebugAgentAction() {
-		super("d: Agent debuggen", KeyEvent.VK_D);
-	}
-
 	@Override
 	public void execute() throws GameException {
 		Selection.waitForSelection(new SelectionEventHandler() {

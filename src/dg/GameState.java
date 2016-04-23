@@ -1,9 +1,10 @@
 package dg;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import dg.action.Action;
+import dg.gui.input.Button;
 import dg.gui.input.Menu;
 
 /**
@@ -42,7 +43,7 @@ public class GameState {
 	 * Nach einem Zug eines KI-Agenten kommt automatisch der nächste Agent an die Reihe.
 	 */
 	public static void nextAgentsTurn() {
-		Menu.clear();
+		Menu.getInstance().clearButtons();
 		
 		int i = 0;
 		if (activeAgent != null) {
@@ -96,7 +97,7 @@ public class GameState {
 	
 	}
 
-	public static Action getPlayerAction(LinkedList<Action> actionOptions) {
+	public static Action getPlayerAction(List<Button> playerButtons) {
 		// TODO Auto-generated method stub
 	
 		throw new NotImplementedException();

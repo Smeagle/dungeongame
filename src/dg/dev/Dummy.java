@@ -11,6 +11,8 @@ import dg.action.Action;
 import dg.event.EventHandler;
 import dg.gui.ImageCache;
 import dg.gui.animation.AnimationQueue;
+import dg.gui.input.Button;
+import dg.gui.input.Dialog;
 import dg.gui.input.Menu;
 
 /**
@@ -35,13 +37,23 @@ public class Dummy extends Agent {
 			@Override
 			public void onEvent() {
 				// set menu buttons
-				Menu.setActions(new Action("SPACE: Zug beenden", KeyEvent.VK_SPACE) {
+				Button endTurn = new Button("SPACE: Zug beenden", new Action() {
 					@Override
 					public void execute() {
 						GameState.nextAgentsTurn();
 					}
+				}, KeyEvent.VK_SPACE);
+				endTurn.setKeyPressOnly(true);
+				
+				Button endTurn2 = new Button("Foo", new Action() {
+					@Override
+					public void execute() {
+						Dialog.open("Foo");
+					}
 				});
-			}
+				
+				Menu.setButtons(endTurn, endTurn2);
+			};
 		});
 	}
 

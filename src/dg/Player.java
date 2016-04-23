@@ -2,9 +2,11 @@ package dg;
 
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
+import java.util.List;
 
 import dg.action.Action;
 import dg.gui.ImageCache;
+import dg.gui.input.Button;
 
 public class Player extends Agent {
 	public static final Integer MOVES_PER_TURN_PLAYER = 3;
@@ -35,7 +37,7 @@ public class Player extends Agent {
 		actionsLeft = ACTIONS_PER_TURN_PLAYER;
 
 		while (actionsLeft > 0 || movesLeft > 0) {
-			LinkedList<Action> actionOptions = new LinkedList<Action>();
+			List<Button> actionOptions = new LinkedList<Button>();
 
 			if (actionsLeft > 0) {
 				actionOptions.addAll(generateActionOptions());
@@ -67,52 +69,53 @@ public class Player extends Agent {
 		}
 	}
 
-	private LinkedList<Action> generateMoveActions(LinkedList<Coordinates> moveOptions) {
-		LinkedList<Action> actionOptions = new LinkedList<Action>();
+	private List<Button> generateMoveActions(List<Coordinates> moveOptions) {
+		List<Button> buttons = new LinkedList<Button>();
 		
 		for(Coordinates move : moveOptions) {
 			Direction d = Direction.getDirectionFromCoordinates(position, move);
-			Action moveAction = new Action(d.name()) {
+			Button moveButton = new Button(d.name(), new Action() {
 				@Override
 				public void execute() throws GameException {
 					GameState.getActiveAgent().performMoveAction(position);
 				}
-			};
-			actionOptions.add(moveAction);
+			});
+			buttons.add(moveButton);
 		}
-		return actionOptions;
+		return buttons;
 	}
 
-	private LinkedList<Action> generateActionOptions() {
-		LinkedList<Action> actionOptions = new LinkedList<Action>();
-		Action endTurnAction = new Action("SPACE: Zug beenden", KeyEvent.VK_SPACE) {
+	private List<Button> generateActionOptions() {
+		List<Button> buttons = new LinkedList<Button>();
+		
+		Button endTurnButton = new Button("SPACE: Zug beenden", new Action() {
 			@Override
 			public void execute() {
 				GameState.getActiveAgent().endTurn();
 			}
-		};
-		actionOptions.add(endTurnAction);
+		}, KeyEvent.VK_SPACE);
+		buttons.add(endTurnButton);
 
-		Action peek = new Action("Peek") {
+		Button peek = new Button("Peek", new Action() {
 			@Override
 			public void execute() {
 				GameState.getActiveAgent().endMovementInProgress();
 				//TODO: Get direction as input, show Vision from field additionally until next action.
 				System.out.println("Peek not implemented yet.");
 			}
-		};
-		actionOptions.add(peek);
+		});
+		buttons.add(peek);
 
-		Action sprint = new Action("Sprint") {
+		Button sprint = new Button("Sprint", new Action() {
 			@Override
 			public void execute() {
 				GameState.getActiveAgent().endMovementInProgress();
 				GameState.getActiveAgent().addMoves(2); // TODO: Add chance of alert and make random amount.
 			}
-		};
-		actionOptions.add(sprint);
+		});
+		buttons.add(sprint);
 		
-		return actionOptions;
+		return buttons;
 	}
 
 	public String getIdentity() {

@@ -2,15 +2,15 @@ package dg.gui.input;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import dg.GameException;
 import dg.action.Action;
 import dg.gui.BoardPanel;
 import dg.gui.Colors;
 
-public class Dialog {
+public class Dialog extends ButtonContainer {
 
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 500;
@@ -25,27 +25,33 @@ public class Dialog {
 	private static Stack<Dialog> stack = new Stack<Dialog>();
 	
 	private String[] message;
-	private List<Button> buttons = null;
 	
 	
 	public Dialog(String[] message, List<Button> buttons) {
-		this.buttons = buttons;
+		this.addButtons(buttons);
 		this.message = message;
-		resize();
 	}
 	
-	public static void open(String message, Action... actions) {
+	public Dialog(String[] message, Button... buttons) {
+		this.addButtons(buttons);
+		this.message = message;
+	}
+	
+	public static void open(String message, Button... buttons) {
 		if (stack.isEmpty()) {
 			BoardPanel.getInstance().removeBoardListeners();
 			BoardPanel.getInstance().addMouseListener(DialogMouseListener.getInstance());
 		}
 		
-		List<Button> buttons = new ArrayList<Button>();
-		
-		for (int i = 0; i < actions.length; i++) {
-			buttons.add(new Button(
-					actions[i], 
-					getButtonShape(actions.length - 1 - i)));
+		if (buttons == null || buttons.length == 0) {
+			buttons = new Button[] {
+				new Button("Schließen", new Action() {
+					@Override
+					public void execute() throws GameException {
+						Dialog.close();
+					}
+				})
+			};
 		}
 		
 		Dialog dialog = new Dialog(
@@ -86,19 +92,18 @@ public class Dialog {
 		g2.setColor(Colors.DIALOG_BACKGROUND);
 		g2.fillRect(BoardPanel.getInstance().getWidth() / 2 - WIDTH / 2, BoardPanel.getInstance().getHeight() / 2 - HEIGHT / 2, WIDTH, HEIGHT);
 		
-		for (Button button : getButtons()) {
-			button.paint(g2);
-		}
+		getTop().paintButtons(g2);
 		
 		g2.setColor(Colors.DIALOG_TEXT);
-		String[] message = getMessage();
+		String[] message = getTop().message;
 		for (int i = 0; i < message.length; i++) {
 			g2.drawString(message[i], BoardPanel.getInstance().getWidth() / 2 - WIDTH / 2 + PADDING, BoardPanel.getInstance().getHeight() / 2 - HEIGHT / 2 + PADDING + 30 + (i * LINE_HEIGHT));
 		}
 		
 	}
 
-	private static Rectangle getButtonShape(int i) {
+	@Override
+	protected Rectangle getButtonShape(int i) {
 		return new Rectangle(
 				BoardPanel.getInstance().getWidth() / 2 - WIDTH / 2 + PADDING, 
 				BoardPanel.getInstance().getHeight() / 2 + HEIGHT / 2 - BUTTON_HEIGHT - PADDING - i * (BUTTON_HEIGHT + BUTTON_SPACING),
@@ -106,26 +111,18 @@ public class Dialog {
 				BUTTON_HEIGHT);
 	}
 	
-	private static String[] getMessage() {
-		return stack.peek().message;
-	}
-
-	public static List<Button> getButtons() {
-		return stack.peek().buttons;
-	}
-	
-	public static void resize() {
-		for (Dialog d : stack) {
-			if (d.buttons != null) {
-				for (int i = 0; i < d.buttons.size(); i++) {
-					d.buttons.get(i).setShape(getButtonShape(d.buttons.size() - 1 - i));
-				}
-			}
-		}
-	}
-
 	public static boolean isVisible() {
 		return !stack.isEmpty();
+	}
+
+	public static Dialog getTop() {
+		return stack.peek();
+	}
+
+	public static void resize() {
+		for (Dialog d : stack) {
+			d.resizeButtons();
+		}
 	}
 	
 }

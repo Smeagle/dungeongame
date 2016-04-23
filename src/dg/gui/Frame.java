@@ -1,5 +1,7 @@
 package dg.gui;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -38,7 +40,11 @@ public class Frame extends JFrame {
 	}
 	
 	private Frame() {
+		this.setLayout(null);
 		this.setTitle(TITLE);
+		this.setLocationRelativeTo(null);
+		this.setResizable(false);
+		this.setUndecorated(true);
 		
 		this.add(BoardPanel.getInstance());
 		this.add(TitlePanel.getInstance());
@@ -56,6 +62,14 @@ public class Frame extends JFrame {
 		});
 		
 		showPanel(TitlePanel.getInstance());
+		
+		// full screen
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = ge.getDefaultScreenDevice();
+		if (device.isFullScreenSupported()) {
+			device.setFullScreenWindow(this);
+		}
+		
 		this.setVisible(true);
 	}
 	

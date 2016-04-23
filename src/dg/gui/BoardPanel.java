@@ -67,7 +67,7 @@ public class BoardPanel extends JPanel {
 	public void setSize(Dimension d) {
 		super.setSize(d);
 		Dialog.resize(); 
-		Menu.resize(); 
+		Menu.getInstance().resizeButtons(); 
 	}
 	
 	public void addBoardListeners() {

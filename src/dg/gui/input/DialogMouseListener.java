@@ -23,11 +23,7 @@ public class DialogMouseListener implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			try {
-				for (Button b : Dialog.getButtons()) {
-					if (b.click(e)) {
-						break;
-					}
-				}
+				Dialog.getTop().click(e);
 			} catch (GameException ex) {
 				// TODO show nice message
 				ex.printStackTrace();

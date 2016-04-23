@@ -1,6 +1,5 @@
 package dg.action;
 
-import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,10 +14,6 @@ public class DebugPathfindingAction extends Action {
 	private static Coordinates start = null;
 	private static boolean active = false;
 	private static List<Coordinates> path = null;
-	
-	public DebugPathfindingAction() {
-		super("w: Wegfindung debuggen", KeyEvent.VK_W);
-	}
 	
 	@Override
 	public void execute() throws GameException {

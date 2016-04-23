@@ -28,11 +28,7 @@ public class MenuMouseListener implements MouseMotionListener, MouseListener {
 		
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			try {
-				for (Button b : Menu.getButtons()) {
-					if (b.click(e)) {
-						break;
-					}
-				}
+				Menu.getInstance().click(e);
 			}
 			catch (GameException ex) {
 				// TODO show nice message

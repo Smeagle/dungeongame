@@ -22,8 +22,8 @@ public class TitlePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final int BUTTON_OFFSET_PERCENT = 66;
-	private static final int BUTTON_SPACING = 20;
+	private static final int BUTTON_OFFSET_PERCENT = 82;
+	private static final int BUTTON_SPACING = 10;
 	private static final int BUTTON_WIDTH = 300;
 	private static final int BUTTON_HEIGHT = 50;
 	
@@ -42,8 +42,10 @@ public class TitlePanel extends JPanel {
 	private TitlePanel() {
 		this.setBackground(Colors.TITLE_PANEL_BACKGROUND);
 		
-		startButton = new Button(new StartGameAction(), getButtonShape(0));
-		endButton = new Button(new ExitGameAction(), getButtonShape(1));
+		startButton = new Button("Spiel starten", new StartGameAction());
+		startButton.setShape(getButtonShape(0));
+		endButton = new Button("Spiel beenden", new ExitGameAction());
+		endButton.setShape(getButtonShape(1));
 		
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -75,8 +77,8 @@ public class TitlePanel extends JPanel {
 		
 		Graphics2D g2 = (Graphics2D) g;
 		
-		Image image = ImageCache.getImage(ImageCache.ROGUERIGO);
-		g2.drawImage(image, (int) (getWidth() / 2. - image.getWidth(null) / 2.), (int) (getHeight() / 100. * 40 - image.getHeight(null) / 2.), null);
+		Image image = ImageCache.getImage(ImageCache.TITLE_SCREEN);
+		g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		
 		GUIUtils.setRenderingHints(g2);
 		
