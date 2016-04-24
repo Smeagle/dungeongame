@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import dg.GameException;
 import dg.action.ExitGameAction;
-import dg.action.StartGameAction;
+import dg.action.NewGameAction;
 import dg.gui.input.Button;
 
 /**
@@ -29,7 +29,7 @@ public class TitlePanel extends JPanel {
 	
 	private static TitlePanel instance = null;
 	
-	private Button startButton;
+	private Button newGameButton;
 	private Button endButton;
 	
 	public static TitlePanel getInstance() {
@@ -42,16 +42,16 @@ public class TitlePanel extends JPanel {
 	private TitlePanel() {
 		this.setBackground(Colors.TITLE_PANEL_BACKGROUND);
 		
-		startButton = new Button("Spiel starten", new StartGameAction());
-		startButton.setShape(getButtonShape(0));
-		endButton = new Button("Spiel beenden", new ExitGameAction());
+		newGameButton = new Button("Neues Spiel", new NewGameAction());
+		newGameButton.setShape(getButtonShape(0));
+		endButton = new Button("Verlassen", new ExitGameAction());
 		endButton.setShape(getButtonShape(1));
 		
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				try {
-					if (startButton.click(e)) {
+					if (newGameButton.click(e)) {
 						return;
 					}
 					endButton.click(e);
@@ -82,7 +82,7 @@ public class TitlePanel extends JPanel {
 		
 		GUIUtils.setRenderingHints(g2);
 		
-		startButton.paint(g2);
+		newGameButton.paint(g2);
 		endButton.paint(g2);
 	}
 	
@@ -93,8 +93,8 @@ public class TitlePanel extends JPanel {
 	}
 	
 	public void resize() {
-		if (startButton != null) {
-			startButton.setShape(getButtonShape(0));
+		if (newGameButton != null) {
+			newGameButton.setShape(getButtonShape(0));
 		}
 		if (endButton != null) {
 			endButton.setShape(getButtonShape(1));

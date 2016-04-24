@@ -4,7 +4,18 @@ import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import dg.action.Action;
+import dg.action.DebugAgentAction;
+import dg.action.DebugPathfindingAction;
+import dg.dev.DevUtilities;
+import dg.dev.Dummy;
+import dg.gui.BoardPanel;
+import dg.gui.Frame;
+import dg.gui.GUIUtils;
+import dg.gui.ImageCache;
+import dg.gui.LoadingPanel;
+import dg.gui.TitlePanel;
 import dg.gui.input.Button;
+import dg.gui.input.Dialog;
 import dg.gui.input.Menu;
 
 /**
@@ -17,6 +28,50 @@ public class GameState {
 	private static Agent activeAgent;
 	
 	private static Coordinates mouseoverCoordinates;
+	
+	/**
+	 * Erstellt ein neues Spiel und startet dieses.
+	 */
+	public static void newGame() {
+		// Ladebildschirm zeigen
+		Frame.getInstance().showPanel(LoadingPanel.getInstance());
+		
+		// Status und Caches zurücksetzen
+		clearStatesAndCaches();
+		
+		// Spielbrett laden
+		setBoard(DevUtilities.getRandomGameboard(10));
+		
+		// Figuren drauf stellen
+		board.addAgent(new Dummy(new Coordinates(1, 1), GameState.getBoard()));
+		DevUtilities.addDevGuards();
+		
+		// Brett zeigen
+		Frame.getInstance().showPanel(BoardPanel.getInstance());
+		
+		// Spiel starten
+		startGame();
+	}
+	
+	/**
+	 * Setzt alle spielbrett/-status-relevanten Caches zurueck.
+	 */
+	private static void clearStatesAndCaches() {
+		GUIUtils.clearCaches();
+		ImageCache.clearCaches();
+		
+		DebugPathfindingAction.clear();
+		DebugAgentAction.clear();
+		
+		Dialog.closeAll(); // sicher ist sicher
+	}
+	
+	/**
+	 * Lädt den Speicherstand und setzt das Spiel fort.
+	 */
+	public static void resumeGame() {
+		//TODO
+	}
 	
 	/**
 	 * Startet das Spiel. Das Brett und Figuren etc. müssen schon aufgestellt sein.
@@ -35,6 +90,27 @@ public class GameState {
 			// falls es keinen Spieler-Agenten gibt...
 			nextAgentsTurn();
 		}
+	}
+	
+	/**
+	 * Geht nach Sicherheitsabfrage zum Titelbildschirm, eventuell wird hier später gespeichert
+	 */
+	public static void stopGame() {
+		Dialog.open("Möchtest du das Spiel wirklich beenden?",
+				new Button("Abbrechen", new Action() {
+					@Override
+					public void execute() throws GameException {
+						Dialog.close();
+					}
+				}),
+				new Button("Ja", new Action() {
+					@Override
+					public void execute() throws GameException {
+						Dialog.close();
+						Frame.getInstance().showPanel(TitlePanel.getInstance());
+					}
+				})
+		);
 	}
 	
 	/**

@@ -38,11 +38,6 @@ public class Dialog extends ButtonContainer {
 	}
 	
 	public static void open(String message, Button... buttons) {
-		if (stack.isEmpty()) {
-			BoardPanel.getInstance().removeBoardListeners();
-			BoardPanel.getInstance().addMouseListener(DialogMouseListener.getInstance());
-		}
-		
 		if (buttons == null || buttons.length == 0) {
 			buttons = new Button[] {
 				new Button("Schlieﬂen", new Action() {
@@ -66,10 +61,6 @@ public class Dialog extends ButtonContainer {
 	 */
 	public static void close() {
 		stack.pop();
-		if (stack.isEmpty()) {
-			BoardPanel.getInstance().removeMouseListener(DialogMouseListener.getInstance());
-			BoardPanel.getInstance().addBoardListeners();
-		}
 	}
 	
 	/**
@@ -77,8 +68,6 @@ public class Dialog extends ButtonContainer {
 	 */
 	public static void closeAll() {
 		stack.clear();
-		BoardPanel.getInstance().removeMouseListener(DialogMouseListener.getInstance());
-		BoardPanel.getInstance().addBoardListeners();
 	}
 
 	public static void paintDialog(Graphics2D g2) {

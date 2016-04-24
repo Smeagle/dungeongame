@@ -32,4 +32,8 @@ public class DebugAgentAction extends Action {
 		return debugAgent;
 	}
 	
+	public static void clear() {
+		debugAgent = null;
+	}
+	
 }

@@ -30,6 +30,7 @@ public class Frame extends JFrame {
 	private void hideAllPanels() {
 		TitlePanel.getInstance().setVisible(false);
 		BoardPanel.getInstance().setVisible(false);
+		LoadingPanel.getInstance().setVisible(false);
 	}
 	
 	public void showPanel(JPanel panel) {

@@ -26,6 +26,11 @@ public class GUIUtils {
 	
 	private static RenderingHints renderingHints = null;
 	
+	public static void clearCaches() {
+		rotationCache.clear();
+		hexOffsetCache.clear();
+	}
+	
 	public static void setRenderingHints(Graphics2D g) {
 		if (renderingHints == null) {
 			renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

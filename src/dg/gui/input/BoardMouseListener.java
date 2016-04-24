@@ -38,6 +38,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		if (Dialog.isVisible()) {
+			return;
+		}
+		
 		BoardPanel.mouseX = e.getX();
 		BoardPanel.mouseY = e.getY();
 		
@@ -53,6 +57,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		if (Dialog.isVisible()) {
+			return;
+		}
+		
 		if (pressOnMenu) {
 			return;
 		}
@@ -67,6 +75,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if (Dialog.isVisible()) {
+			return;
+		}
+		
 		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
 			pressOnMenu = true;
 			return;
@@ -85,6 +97,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (Dialog.isVisible()) {
+			return;
+		}
+		
 		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
 			return;
 		}
@@ -114,6 +130,10 @@ public class BoardMouseListener implements MouseMotionListener, MouseListener, M
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		if (Dialog.isVisible()) {
+			return;
+		}
+		
 		if (e.getX() >= BoardPanel.getInstance().getWidth() - Menu.MENU_WIDTH) {
 			return;
 		}

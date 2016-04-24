@@ -17,8 +17,7 @@ public class DebugPathfindingAction extends Action {
 	
 	@Override
 	public void execute() throws GameException {
-		start = null;
-		active = false;
+		clear();
 		Selection.waitForSelection(new SelectionEventHandler() {
 			@Override
 			public void onEvent(Coordinates c) {
@@ -44,6 +43,12 @@ public class DebugPathfindingAction extends Action {
 	
 	public static Collection<Coordinates> getPath() {
 		return path;
+	}
+	
+	public static void clear() {
+		start = null;
+		active = false;
+		path = null;
 	}
 	
 }

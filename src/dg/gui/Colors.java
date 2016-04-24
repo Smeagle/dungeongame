@@ -18,6 +18,7 @@ public class Colors {
 	
 	public static final Color BOARD_PANEL_BACKGROUND = Color.decode("#6F4E37"); // coffee brown!
 	public static final Color TITLE_PANEL_BACKGROUND = Color.black;
+	public static final Color LOADING_PANEL_BACKGROUND = Color.black;
 	
 	public static final Color BUTTON_DEFAULT_BACKGROUND_COLOR = Color.darkGray;
 	public static final Color BUTTON_DEFAULT_TEXT_COLOR = Color.WHITE;

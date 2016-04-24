@@ -22,6 +22,7 @@ import dg.Terrain;
 import dg.action.DebugPathfindingAction;
 import dg.gui.input.BoardMouseListener;
 import dg.gui.input.Dialog;
+import dg.gui.input.DialogMouseListener;
 import dg.gui.input.Menu;
 import dg.gui.input.MenuMouseListener;
 import dg.gui.input.Selection;
@@ -71,21 +72,17 @@ public class BoardPanel extends JPanel {
 	}
 	
 	public void addBoardListeners() {
+		// board
 		this.addMouseMotionListener(BoardMouseListener.getInstance());
 		this.addMouseListener(BoardMouseListener.getInstance());
 		this.addMouseWheelListener(BoardMouseListener.getInstance());
 		
+		// menu
 		this.addMouseMotionListener(MenuMouseListener.getInstance());
 		this.addMouseListener(MenuMouseListener.getInstance());
-	}
-	
-	public void removeBoardListeners() {
-		this.removeMouseMotionListener(BoardMouseListener.getInstance());
-		this.removeMouseListener(BoardMouseListener.getInstance());
-		this.removeMouseWheelListener(BoardMouseListener.getInstance());
 		
-		this.removeMouseMotionListener(MenuMouseListener.getInstance());
-		this.removeMouseListener(MenuMouseListener.getInstance());
+		// dialog
+		this.addMouseListener(DialogMouseListener.getInstance());
 	}
 	
 	@Override

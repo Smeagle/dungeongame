@@ -41,6 +41,10 @@ public class ImageCache {
 	
 	private static Hashtable<Coordinates, Image> coordinatesCache = new Hashtable<Coordinates, Image>();
 	
+	public static void clearCaches() {
+		coordinatesCache.clear();
+	}
+	
 	public static Image getImage(String name) {
 		if (cache.containsKey(name)) {
 			return cache.get(name);
