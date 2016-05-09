@@ -25,7 +25,8 @@ public class LOSUtilities {
 			// Leverages that Directions are in circular order
 			Coordinates adjacent_one = new Coordinates(c, Direction.values()[i]);
 			Coordinates adjacent_two = new Coordinates(c, Direction.values()[(i + 1) % (Direction.values().length)]);
-			Coordinates corner = new Coordinates((c.q + adjacent_one.q + adjacent_two.q),(c.r + adjacent_one.r + adjacent_two.r));
+			Coordinates corner = new Coordinates((c.q + adjacent_one.q + adjacent_two.q),
+					(c.r + adjacent_one.r + adjacent_two.r));
 
 			corners.add(corner);
 		}
@@ -80,7 +81,7 @@ public class LOSUtilities {
 		Integer dist = Coordinates.calculateDistance(rayOrigin, rayTarget);
 		Integer dq = rayTarget.q - rayOrigin.q;
 		Integer dr = rayTarget.r - rayOrigin.r;
-		
+
 		if (rayOrigin == rayTarget) {
 			// Duh, looking at myself.
 			HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
@@ -119,13 +120,18 @@ public class LOSUtilities {
 			}
 		} else {
 			// Check slanted rectangle between origin and target
+			HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
 			for (int range_r = Math.min(rayOrigin.r, rayTarget.r); range_r < Math.max(rayOrigin.r, rayTarget.r) + 1; range_r++) {
 				for (int range_q = Math.min(rayOrigin.q, rayTarget.q); range_q < Math.max(rayOrigin.q, rayTarget.q) + 1; range_q++) {
 					Coordinates cand = new Coordinates(range_q, range_r);
 					if (Intersection.CLEAR != intersects(rayOrigin, rayTarget, cand)) {
-						HashSet<Coordinates> fieldsAtSameDist = new HashSet<Coordinates>();
-						fieldsAtSameDist.add(cand);
-						fieldsOnLine.put(Coordinates.calculateDistance(rayOrigin, cand), fieldsAtSameDist);
+						if (fieldsOnLine.containsKey(Coordinates.calculateDistance(rayOrigin, cand)) == false) {
+							fieldsAtSameDist = new HashSet<Coordinates>();
+							fieldsAtSameDist.add(cand);
+							fieldsOnLine.put(Coordinates.calculateDistance(rayOrigin, cand), fieldsAtSameDist);
+						} else {
+							fieldsOnLine.get(Coordinates.calculateDistance(rayOrigin, cand)).add(cand);
+						}
 					}
 				}
 			}

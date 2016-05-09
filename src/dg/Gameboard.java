@@ -148,17 +148,22 @@ public class Gameboard {
 		HashMap<Integer, HashSet<Coordinates>> rayFields = LOSUtilities.getFieldsOnRay(viewPoint, target);
 
 		for (int i = 0; (visible == true) && (i < distance); i++) {
-			// No need to check last field, it's visible if not blocked by earlier step.
+			// No need to check target field, it's visible if not blocked by earlier step.
 			HashSet<Coordinates> nextStep = rayFields.get(i);
 
 			// Touching Lines only block view when both are wall.
 			boolean wall = true;
 			for (Coordinates c : nextStep) {
-				// Treat outOfBound fields like walls for visibility
+				// Treat outOfBound fields like walls for visibility.
 				if (isInBounds(c) == true && getTerrain(c) != Terrain.WALL) {
+					// For only one intersected or two touched fields a single Floor tile is sufficient.
 					wall = false;
+				} else if (LOSUtilities.intersects(viewPoint, target, c) == Intersection.INTERSECTS) {
+					// Is either outOfBounds or wall, and intersects, stops visibility.
+					visible = false;
 				}
 			}
+
 			if (wall == true) {
 				visible = false;
 			}
