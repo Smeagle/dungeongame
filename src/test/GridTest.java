@@ -136,5 +136,28 @@ public class GridTest {
 		assertEquals(false, visibleFields.contains(topLeft));
 		assertEquals(false, visibleFields.contains(topRight));		
 	}
+	
+	@Test
+	public void longRangeViewTest() {
+		board = GameBoardUtils.boardGenerator("F F F F W F W F F $ F F F F F W W F F F $ F W F W F F F F F F F $ F W W W W W F W F F $ W F F W W W W W F $");
+		viewPoint = new Coordinates(7, 0);
+		HashSet<Coordinates> visibleFields = board.getFieldOfView(viewPoint);
+		
+
+		assertEquals(false, board.isVisible(viewPoint, new Coordinates(1,-1)));
+		
+		assertEquals(false, visibleFields.contains(new Coordinates(3,-1)));
+		assertEquals(false, visibleFields.contains(new Coordinates(2,-1)));
+		assertEquals(false, visibleFields.contains(new Coordinates(1,-1)));
+		assertEquals(false, visibleFields.contains(new Coordinates(0,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(1,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(2,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(3,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(4,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(5,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(6,0)));
+		assertEquals(true, visibleFields.contains(new Coordinates(2,0)));
+		
+	}
 
 }

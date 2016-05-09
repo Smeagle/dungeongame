@@ -30,6 +30,7 @@ public class LOSUtilitiesTest {
 	Coordinates c2_0 = new Coordinates(2, 0);
 	Coordinates cm1_2 = new Coordinates(-1, 2);
 	Coordinates c2_m1 = new Coordinates(2, -1);
+	Coordinates cm3_1 = new Coordinates(-3, 1);
 
 	Coordinates rayOrigin = c1_0;
 
@@ -72,7 +73,7 @@ public class LOSUtilitiesTest {
 		assertEquals(Intersection.TOUCHES, LOSUtilities.intersects(rayOrigin, c0_m1, c1_m1));
 		assertEquals(Intersection.CLEAR, LOSUtilities.intersects(rayOrigin, c0_m1, cm1_0));
 	}
-	
+
 	@Test
 	public void crookedLineTest() {
 		// Ray in Row from (1,0) to (0,-2) intersects (1,0) (1,-1) (0,-1) (0,-2), clears (1,-2) and (0,0)
@@ -83,5 +84,17 @@ public class LOSUtilitiesTest {
 		assertEquals(Intersection.CLEAR, LOSUtilities.intersects(rayOrigin, c0_m2, c1_m2));
 		assertEquals(Intersection.CLEAR, LOSUtilities.intersects(rayOrigin, c0_m2, c0_0));
 	}
-	
+
+	@Test
+	public void longerCrookedLineTest() {
+		// Ray from (1,0) to (-3,1) intersects (1,0) (0,0) (-1,1) (-1,0) (-2,1) (-3,1)
+		assertEquals(Intersection.INTERSECTS, LOSUtilities.intersects(rayOrigin, cm3_1, rayOrigin));
+		assertEquals(Intersection.INTERSECTS, LOSUtilities.intersects(rayOrigin, cm3_1, c0_0));
+		assertEquals(Intersection.INTERSECTS, LOSUtilities.intersects(rayOrigin, cm3_1, cm1_1));
+		assertEquals(Intersection.INTERSECTS, LOSUtilities.intersects(rayOrigin, cm3_1, cm1_0));
+		assertEquals(Intersection.INTERSECTS, LOSUtilities.intersects(rayOrigin, cm3_1, cm2_1));
+		assertEquals(Intersection.INTERSECTS, LOSUtilities.intersects(rayOrigin, cm3_1, cm3_1));
+
+	}
+
 }
