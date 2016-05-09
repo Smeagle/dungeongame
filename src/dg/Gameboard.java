@@ -186,7 +186,6 @@ public class Gameboard {
 			Coordinates currentField = frontier.pollFirst();
 			if (evaluatedFields.contains(currentField) == false && isVisible(viewPoint, currentField)) {
 				visibleFields.add(currentField);
-				System.out.println(currentField.toString() + " visible");
 				for (Coordinates neighbor : getNeighbors(currentField)) {
 					if (false == evaluatedFields.contains(neighbor)) {
 						frontier.add(neighbor);
