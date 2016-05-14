@@ -1,6 +1,7 @@
 package dg.gui.input;
 
 import dg.event.EventHandler;
+import dg.gui.BoardPanel;
 
 public class Selection {
 
@@ -18,6 +19,7 @@ public class Selection {
 		Selection.selectionMode = true;
 		Selection.eventHandler = eventHandler;
 		Selection.helpText = helpText;
+		BoardPanel.updateMouseoverCoordinates();
 	}
 	
 	public static void disable() {
