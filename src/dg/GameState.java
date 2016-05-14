@@ -1,5 +1,7 @@
 package dg;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -31,28 +33,38 @@ public class GameState {
 	
 	/**
 	 * Erstellt ein neues Spiel und startet dieses.
+	 * @throws GameException 
 	 */
-	public static void newGame() {
-		// Ladebildschirm zeigen
-		Frame.getInstance().showPanel(LoadingPanel.getInstance());
-		
-		// Status und Caches zurücksetzen
-		clearStatesAndCaches();
-		
-		// Spielbrett laden
-		setBoard(DevUtilities.getRandomGameboard(10));
-		
-		// Figuren drauf stellen
-		board.addAgent(new Dummy(new Coordinates(1, 1), GameState.getBoard()));
-		DevUtilities.addDevGuards();
-		
-		// Brett zeigen
-		Frame.getInstance().showPanel(BoardPanel.getInstance());
-		
-		// Spiel starten
-		startGame();
+	public static void newGame() throws GameException {
+		try {
+			// Ladebildschirm zeigen
+			Frame.getInstance().showPanel(LoadingPanel.getInstance());
+			
+			// Status und Caches zurücksetzen
+			clearStatesAndCaches();
+			
+			// Spielbrett laden
+			setBoard(getDefaultBoard());
+			
+			// Figuren drauf stellen
+			board.addAgent(new Dummy(new Coordinates(1, 1), GameState.getBoard()));
+			DevUtilities.addDevGuards();
+			
+			// Brett zeigen
+			Frame.getInstance().showPanel(BoardPanel.getInstance());
+			
+			// Spiel starten
+			startGame();
+		}
+		catch (Exception e) {
+			throw new GameException(e);
+		}
 	}
 	
+	private static Gameboard getDefaultBoard() throws IOException {
+		return GameBoardUtils.boardGenerator(new File("boards/default.txt"));
+	}
+
 	/**
 	 * Setzt alle spielbrett/-status-relevanten Caches zurueck.
 	 */

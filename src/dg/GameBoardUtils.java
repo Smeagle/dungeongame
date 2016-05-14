@@ -1,9 +1,23 @@
 package dg;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.List;
 
 public class GameBoardUtils {
 
+	public static Gameboard boardGenerator(File file) throws IOException {
+		List<String> strings = Files.readAllLines(Paths.get(file.getPath()));
+		StringBuilder sb = new StringBuilder();
+		for (String s : strings) {
+			sb.append(s);
+		}
+		return boardGenerator(sb.toString());
+	}
+	
 	/**
 	 * Expects String of field symbols. Row ends are demarkated with " $ ".
 	 * 
@@ -23,6 +37,9 @@ public class GameBoardUtils {
 
 		int rowNumber = 0;
 		for (String field : fields) {
+			if (field.trim().isEmpty()) {
+				continue;
+			}
 			if (isDelimiter(field) == false) {
 				if (rows.size() < rowNumber + 1) {
 					rows.add(new LinkedList<String>());
@@ -38,23 +55,20 @@ public class GameBoardUtils {
 		}
 
 		int rowOffset = -1 * (rows.size() / 2);
+		int globalColumnOffset = -1 * (rows.size() / 4);
 		int columnOffset = 0;
-		boolean growing = true;
-		// Assumes that center row has most fields and rest is shaped hexagonally.
 		for (int r = 0; r < rows.size(); r++) {
 			int rowSize = rows.get(r).size();
-
-			for (int q = 0; q < rowSize; q++) {
-				Coordinates c = new Coordinates(q + columnOffset, r + rowOffset);
-				System.out.println("q = " + q + ", r = " + r + ", resulting Coordinates = " + c.toString());
-				parseField(board, c, rows.get(r).get(q));
+			
+			if (r > 0) {
+				int rowSizeDiff = rowSize - rows.get(r - 1).size();
+				columnOffset += (rowSizeDiff >= 0 ? 1 : 0) + rowSizeDiff / 2;
 			}
 			
-			if (rowSize == maxFieldsPerRow) {
-				growing = false;
-			}
-			if (growing) {
-				columnOffset = columnOffset - 1;
+			for (int q = 0; q < rowSize; q++) {
+				Coordinates c = new Coordinates(q - columnOffset - globalColumnOffset, r + rowOffset);
+				System.out.println("q = " + q + ", r = " + r + ", resulting Coordinates = " + c.toString());
+				parseField(board, c, rows.get(r).get(q));
 			}
 		}
 
