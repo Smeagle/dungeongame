@@ -202,6 +202,7 @@ public class Guard extends Agent {
 		LinkedList<Coordinates> moveOptions = new LinkedList<Coordinates>();
 
 		for (Coordinates neighbor : board.getNeighbors(c)) {
+			// Guards may not walk on EXIT
 			if (board.getTerrain(neighbor) == Terrain.FLOOR) {
 				boolean isOccupiedByFriend = false;
 				for (Agent agent : board.getAgents()) {
